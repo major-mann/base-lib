@@ -1,0 +1,6 @@
+extends: "../.eslintrc"
+
+rules:
+    max-len:
+        - 2
+        - 250

@@ -1,0 +1,46 @@
+{
+  "name": "base-lib",
+  "version": "1.0.0",
+  "description": "A base library that includes a build pipeline and QA tools (testing, linting etc)",
+  "main": "src/index.js",
+  "scripts": {
+    "precommit": "npm test",
+    "prepush": "npm test",
+    "test": "grunt test",
+    "cover": "grunt cover",
+    "bump": "./scripts/bump.js",
+    "quality": "grunt quality"
+  },
+  "bin": {
+    "bump": "./scripts/bump.js",
+    "prepare-environment": "./scripts/prepare-environment.js"
+  },
+  "author": "Calvin Mann <calvinmann+npm@gmail.com>",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "chai": "latest",
+    "chai-as-promised": "latest",
+    "chai-spies": "latest",
+    "grunt": "latest",
+    "grunt-eslint": "latest",
+    "grunt-mocha-test": "latest",
+    "istanbul": "latest",
+    "mocha": "latest",
+    "mockery": "latest"
+  },
+  "dependencies": {
+    "app-root-path": "latest",
+    "command-exists": "latest",
+    "eslint": "latest",
+    "husky": "latest",
+    "minimist": "latest",
+    "npm": "latest",
+    "parse-git-config": "latest",
+    "winston": "latest"
+  },
+  "engines": {
+    "node": ">=8.1.0",
+    "npm": ">=5.0.2"
+  },
+  "keywords": ""
+}
