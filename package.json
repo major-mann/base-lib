@@ -9,7 +9,8 @@
         "test": "grunt test",
         "cover": "grunt cover",
         "bump": "./scripts/bump.js",
-        "quality": "grunt quality"
+        "quality": "grunt quality",
+        "install": "./scripts/post-install.js"
     },
     "bin": {
         "bump": "./scripts/bump.js",
