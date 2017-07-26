@@ -13,6 +13,7 @@
 
 // Constants
 const PACKAGE = 'package.json',
+    PACKAGE_SPACE = 4,
     GIT_DIRECTORY = '.git',
     GIT = 'git',
     VERSION_COUNT = 3,
@@ -101,7 +102,7 @@ function bumpPackage() {
     function updatePackage() {
         logInfo('save package.json');
         pkg.version = version.join('.');
-        const str = JSON.stringify(pkg, undefined, 2);
+        const str = JSON.stringify(pkg, undefined, PACKAGE_SPACE);
         return new Promise(function promiseHandler(resolve, reject) {
             fs.writeFile(appRoot.resolve(PACKAGE), `${str}\n`, { encoding: 'utf8' }, function onFileWritten(err) {
                 if (err) {
