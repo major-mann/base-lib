@@ -6,7 +6,7 @@
  */
 
 // Constants
-const PACKAGE_SPACE = 2, // For consistency with NPM
+const PACKAGE_SPACE = 4,
     LINK_ARG = 'ln',
     HEADING_LENGTH = 20,
     // TODO: Maybe this should be a license file and SEE LICENSE IN license.. Maybe all rights reserved?
