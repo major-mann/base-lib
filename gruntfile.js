@@ -1,2 +1,2 @@
-const grunt = require('./src/grunt.js').grunt;
-module.exports = baseService.grunt([], {}, []);
+const grunt = require('./src/grunt.js');
+module.exports = grunt([], {}, []);

@@ -1,8 +1,8 @@
-const appRoot = require('app-root-path'),
-    path = require('path');
+const path = require('../src/path-helper.js'),
+    nodePath = require('path');
 
 module.exports = function generateEslintRcContent() {
-    var target = path.join(__dirname, '../reference/eslintrc');
-    target = path.relative(appRoot.toString(), target);
-    return `extends: "${target}"`;
+    var target = nodePath.join(__dirname, '../reference/eslintrc');
+    target = nodePath.relative(path.consumerPath(), target);
+    return `extends: "./${target}"`;
 };

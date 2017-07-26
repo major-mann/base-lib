@@ -2,6 +2,7 @@
  * @module Grunt. This module provides a general grunt configuration which contains the common stuff, but can be easily
  *  extended.
  */
+const grunt = require('grunt');
 
 // Constants
 const MODULES = [
@@ -62,19 +63,18 @@ const MODULES = [
             target: '.'
         },
         jscpd: {
-            javascript: {
+            src: {
                 path: 'src/',
                 exclude: []
             },
             spec: {
                 path: 'spec/',
-                exclude: ['scrap/**']
+                exclude: []
             }
         },
         jsonlint: {
             all: {
-                // TODO: Exclude package.json from this (since NPM decides it's own rules)
-                src: ['**/*.json'],
+                src: ['**/*.json', '!node_modules/**'],
                 options: {
                     format: true,
                     indent: 4

@@ -1,1 +1,1 @@
-extends: "reference/eslintrc"
+extends: "./reference/eslintrc"

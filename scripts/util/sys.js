@@ -16,6 +16,7 @@ module.exports = {
 
 // Dependecies
 const spawn = require('child_process').spawn,
+    path = require('path'),
     fs = require('fs');
 
 /** Executes a command in the given working direcotry */

@@ -1,0 +1,6 @@
+--recursive
+--reporter dot
+--bail
+--check-leaks
+--ui bdd
+test/testing-helper.js

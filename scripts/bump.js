@@ -22,7 +22,7 @@ const PACKAGE = 'package.json',
 
 // Dependencies
 const commandExists = require('command-exists'),
-    appRoot = require('app-root-path'),
+    appRoot = require('../src/path-helper.js'),
     minimist = require('minimist'),
     spawn = require('child_process').spawn,
     fs = require('fs');
@@ -30,17 +30,19 @@ const commandExists = require('command-exists'),
 // Do the bump
 bumpPackage();
 
-// TODO: Add change log build
-
 /**
  * Increments the package.json version number, tags the current commit and commits the
  */
 function bumpPackage() {
-    var version, pkg;
+    var version, pkg, update;
     const argv = minimist(process.argv.slice(2));
 
+    if (printHelp()) {
+        return;
+    }
+
     // Determine which part of the version we are updating.
-    var update = REVISION;
+    update = REVISION;
     if (argv.minor) {
         update = MINOR;
     } else if (argv.major) {
@@ -67,6 +69,19 @@ function bumpPackage() {
             logError(`Error bumping version! ${err.stack || err}`);
         }
         process.exit(-1);
+    }
+
+    function printHelp() {
+        if (argv.help) {
+            console.info(`Usage: bump [options]`);
+            console.info('\t--revision [Default] Bumps the version revision');
+            console.info('\t--minor Bumps the minor version number');
+            console.info('\t--major Bumps the major version number');
+            console.info('\t--verbose Enables verbose logging output');
+            return true;
+        } else {
+            return false;
+        }
     }
 
     function loadPackage() {

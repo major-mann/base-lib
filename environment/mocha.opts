@@ -1,0 +1,5 @@
+--recursive
+--reporter spec
+--bail
+--check-leaks
+testing-helper.js

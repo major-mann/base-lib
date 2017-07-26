@@ -1,6 +1,16 @@
 extends: "../.eslintrc"
+env:
+    jasmine: true
+
+globals:
+    chai: true
 
 rules:
     max-len:
         - 2
         - 250
+    func-names: 0
+    max-nested-callbacks:
+        - 2
+        - 5
+    no-magic-numbers: 0

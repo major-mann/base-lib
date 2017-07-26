@@ -8,6 +8,7 @@
 // Constants
 const PACKAGE_SPACE = 2, // For consistency with NPM
     LINK_ARG = 'ln',
+    HEADING_LENGTH = 20,
     // TODO: Maybe this should be a license file and SEE LICENSE IN license.. Maybe all rights reserved?
     LICENSE = 'GPL-3.0',
     VERSION = '1.0.0',
@@ -55,15 +56,11 @@ var appRoot, local, argv, destPackage;
     appRoot = path.join(path.dirname(process.argv[1]), '../').split('node_modules')[0];
     local = appRoot === path.join(__dirname, '../');
 
-    console.info(`Preparing environment for project rooted at "${appRoot}"`)
+    console.info(`Preparing environment for project rooted at "${appRoot}"`);
 
     // Create structure
     git.uncommittedChanges(appRoot)
-        .then(changes => {
-            if (changes) {
-                throw new Error('Cannot initialize when there are unstaged changes');
-            }
-        })
+        .then(checkChanges)
         .then(() => heading('Structure'))
         .then(() => mkdir('src'))
         .then(() => keep('src'))
@@ -80,6 +77,7 @@ var appRoot, local, argv, destPackage;
         .then(() => fileLink('environment/eslintignore', '.eslintignore', true))
         .then(() => fileLink('environment/editorconfig', '.editorconfig', true))
         .then(() => fileLink('environment/istanbul.yml', '.istanbul.yml', true))
+        .then(() => fileLink('environment/mocha.opts', 'test/mocha.opts', true))
         // Copied files
         .then(() => copy('environment/test.editorconfig', 'test/.editorconfig', true))
         .then(() => copy('environment/test.eslintrc', 'test/.eslintrc', true))
@@ -95,18 +93,30 @@ var appRoot, local, argv, destPackage;
         .catch(err => console.error(err.stack));
 }());
 
+function checkChanges(changes) {
+    if (changes) {
+        throw new Error('Cannot initialize when there are unstaged changes');
+    }
+}
+
 function heading(text) {
     var start, end;
-    if (text.length < 20) {
-        start = Math.floor((20 - text.length) / 2);
-        end = Math.ceil((20 - text.length) / 2);
-        start = Array(start).fill('-').join('');
-        end = Array(end).fill('-').join('');
+    if (text.length < HEADING_LENGTH) {
+        start = Math.floor((HEADING_LENGTH - text.length) / 2);
+        end = Math.ceil((HEADING_LENGTH - text.length) / 2);
+        start = Array(start)
+            .fill('-')
+            .join('');
+        end = Array(end)
+            .fill('-')
+            .join('');
         text = `${start}${text}${end}`;
     }
-    const breaker = Array(text.length).fill('-').join('');
+    const breaker = Array(text.length)
+        .fill('-')
+        .join('');
     console.error(breaker);
-    console.error(text)
+    console.error(text);
     console.error(breaker);
 }
 
@@ -148,7 +158,10 @@ function updatePackageJson(created) {
     }
 
     function updateValues() {
-        if (!created) {
+        if (created) {
+            // We only update if we haven't just created
+            return undefined;
+        } else {
             return question('Enter the name of the package', destPackage.name)
                 .then(answer => destPackage.name = answer)
                 .then(() => question('Enter the initial version', destPackage.version, VERSION_MATCH))
@@ -210,6 +223,7 @@ function savePackageJson() {
     console.info('savePackageJson()');
     if (argv.nowrite) {
         console.error('Would have written package.json');
+        return undefined;
     } else {
         const packagePath = path.join(appRoot, 'package.json');
         const text = JSON.stringify(destPackage, null, PACKAGE_SPACE);
@@ -230,12 +244,14 @@ function gitPrep() {
         if (installed) {
             if (argv.nowrite) {
                 console.error('Would have initialized GIT repository');
+                return undefined;
             } else {
                 ask.end(); // Make sure we won't interfere with stdin
                 return git.initialize(appRoot);
             }
         } else {
             console.warn('Git is not installed. Skipping git preperation.');
+            return undefined;
         }
     }
 
@@ -284,25 +300,25 @@ function createPackageJson() {
         .then(answer => destPackage.repository = answer ? { type: 'git', url: answer } : undefined)
         .then(() => question('Keywords'))
         .then(answer => destPackage.keywords = answer);
+}
 
-    /** Get's author details */
-    function getAuthorDetails() {
-        return npm.author()
-            .then(details => ensureData(details, 'name', 'Enter your name'))
-            .then(details => ensureData(details, 'email', 'Enter your email', EMAIL_MATCH))
-            .then(details => `${details.name} <${details.email}>`);
+/** Get's author details */
+function getAuthorDetails() {
+    return npm.author()
+        .then(details => ensureData(details, 'name', 'Enter your name'))
+        .then(details => ensureData(details, 'email', 'Enter your email', EMAIL_MATCH))
+        .then(details => `${details.name} <${details.email}>`);
 
-        /** Ensures the supplied data is available on the object */
-        function ensureData(data, name, question, check) {
-            if (data[name]) {
+    /** Ensures the supplied data is available on the object */
+    function ensureData(data, name, question, check) {
+        if (data[name]) {
+            // Note: we return data for chaining
+            return data;
+        } else {
+            return question(question, undefined, check)
+                .then(ans => data[name] = ans)
                 // Note: we return data for chaining
-                return data;
-            } else {
-                return question(question, undefined, check)
-                    .then(ans => data[name] = ans)
-                    // Note: we return data for chaining
-                    .then(() => data);
-            }
+                .then(() => data);
         }
     }
 }
@@ -310,8 +326,8 @@ function createPackageJson() {
 function ensureEngines(answer) {
     if (answer && answer !== NONE) {
         destPackage.engines = destPackage.engines || {};
-        return answer;
     }
+    return answer;
 }
 
 /**
@@ -336,6 +352,7 @@ function dynamic(name, dest, check) {
         const content = dynMod();
         if (argv.nowrite) {
             console.error(`Would have written dynamic file "${dest}"`);
+            return undefined;
         } else {
             return sys.write(dest, content);
         }
@@ -386,6 +403,7 @@ function copy(src, dest, check) {
     function doCopy() {
         if (argv.nowrite) {
             console.error(`Would have copied "${src}" to "${dest}"`);
+            return undefined;
         } else {
             return sys.copy(src, dest);
         }
@@ -420,6 +438,7 @@ function ln(src, dest) {
     console.info(`ln(${JSON.stringify(src)}, ${JSON.stringify(dest)})`);
     if (argv.nowrite) {
         console.error(`Would have linked "${src}" to "${dest}"`);
+        return undefined;
     } else {
         src = path.join(__dirname, '..', src);
         dest = path.join(appRoot, dest);
@@ -430,6 +449,7 @@ function ln(src, dest) {
 function npmInstall() {
     if (argv.nowrite) {
         console.error('Would have run "npm install"');
+        return undefined;
     } else {
         return npm.install(appRoot);
     }
@@ -447,12 +467,8 @@ function question(txt, def, options) {
 
 function noneRegexQuestion(txt, def, options) {
     txt = `${txt} (enter "${NONE}" for none)`;
-    return question(txt, def, function (ans) {
-        if (ans === NONE) {
-            return;
-        } else if (options.exec(ans)) {
-            return;
-        } else {
+    return question(txt, def, function onAnswered(ans) {
+        if (ans !== NONE && !options.exec(ans)) {
             throw new Error(`Invalid answer ${ans}`);
         }
     });

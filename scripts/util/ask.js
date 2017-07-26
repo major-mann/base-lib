@@ -8,7 +8,7 @@ var rl;
 
 // Expose the public API
 module.exports = ask;
-ask.end = () => {
+ask.end = function end() {
     if (rl) {
         rl.close();
         rl = undefined;
@@ -29,35 +29,54 @@ function ask(txt, def, options) {
     }
 
     return new Promise(function promiseHandler(resolve) {
-        rl.question(question, function onAnswer(answer) {
+        rl.question(question, onAnswer);
+
+        /** Called once the user has typed a response and pushes enter */
+        function onAnswer(answer) {
             rl.pause();
             answer = answer || def || '';
             if (options) {
-                if (typeof options === 'function') {
-                    try {
-                        options(answer);
-                        resolve(answer);
-                    } catch (ex) {
-                        console.warn(`Answer "${answer}" is invalid. ${ex.message}`);
-                        ask(txt, def, options).then(resolve);
-                    }
-                } else if (options instanceof RegExp) {
-                    if (options.exec(answer)) {
-                        resolve(answer);
-                    } else {
-                        console.warn(`Answer "${answer}" is invalid.${optionsText}`);
-                    }
-                } else if (options.includes(answer)) {
-                    resolve(answer);
-                } else {
-                    console.warn(`Answer "${answer}" is invalid. Valid options are ${optionsText}`);
-                    // Note: this function never rejects so we don't need to add a rejection handler.
-                    ask(txt, def, options).then(resolve);
-                }
+                return processOptions(answer)
+                    .then(resolve);
             } else {
-                resolve(answer);
+                return resolve(answer);
             }
-        });
+        }
+
+        /** Processes the answer according to the received options */
+        function processOptions(answer) {
+            if (typeof options === 'function') {
+                return checkFunction(answer);
+            } else if (options instanceof RegExp) {
+                return checkRegExp(answer);
+            } else if (options.includes(answer)) {
+                return Promise.resolve(answer);
+            } else {
+                console.warn(`Answer "${answer}" is invalid. Valid options are ${optionsText}`);
+                // Note: this function never rejects so we don't need to add a rejection handler.
+                return ask(txt, def, options);
+            }
+        }
+
+        /** Checks the answer through an options funciton */
+        function checkFunction(answer) {
+            try {
+                return options(answer);
+            } catch (ex) {
+                console.warn(`Answer "${answer}" is invalid. ${ex.message}`);
+                return ask(txt, def, options);
+            }
+        }
+
+        /** Checks the answer through an options regexp */
+        function checkRegExp(answer) {
+            if (options.exec(answer)) {
+                return Promise.resolve(answer);
+            } else {
+                console.warn(`Answer "${answer}" is invalid.${optionsText}`);
+                return ask(txt, def, options);
+            }
+        }
     });
 
     function createOptionsText() {
@@ -81,4 +100,4 @@ function ask(txt, def, options) {
             return '';
         }
     }
-};
+}

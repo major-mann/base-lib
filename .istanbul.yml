@@ -1,0 +1,2 @@
+instrumentation:
+    excludes: ['src/path-helper.js', 'src/grunt.js', 'environment/**/*.js', 'dynamic/**/*.js', 'reference/**/*.js', 'scripts/**/*.js', '**/test/**/*.js']
