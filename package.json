@@ -1,51 +1,51 @@
 {
-  "name": "base-lib",
-  "version": "0.0.1",
-  "description": "A base library that includes a build pipeline and QA tools (testing, linting etc)",
-  "main": "src/index.js",
-  "scripts": {
-    "precommit": "npm test",
-    "prepush": "npm test",
-    "test": "grunt test",
-    "cover": "grunt cover",
-    "bump": "./scripts/bump.js",
-    "quality": "grunt quality"
-  },
-  "bin": {
-    "bump": "./scripts/bump.js",
-    "prepare-environment": "./scripts/prepare-environment.js"
-  },
-  "author": "Calvin Mann <calvinmann+npm@gmail.com>",
-  "license": "GPL-3.0",
-  "devDependencies": {
-    "app-root-path": "latest",
-    "chai": "latest",
-    "chai-as-promised": "latest",
-    "chai-spies": "latest",
-    "command-exists": "latest",
-    "eslint": "latest",
-    "grunt": "latest",
-    "grunt-complexity": "latest",
-    "grunt-eslint": "latest",
-    "grunt-jscpd": "latest",
-    "grunt-jsonlint": "latest",
-    "grunt-mocha-test": "latest",
-    "grunt-shell": "latest",
-    "husky": "latest",
-    "istanbul": "latest",
-    "minimist": "latest",
-    "mocha": "latest",
-    "mockery": "latest",
-    "npm": "latest",
-    "parse-git-config": "latest",
-    "winston-spy": "latest"
-  },
-  "dependencies": {
-    "moment": "latest"
-  },
-  "engines": {
-    "node": "undefined",
-    "npm": "undefined"
-  },
-  "keywords": ""
+    "name": "base-lib",
+    "version": "0.0.1",
+    "description": "A base library that includes a build pipeline and QA tools (testing, linting etc)",
+    "main": "src/index.js",
+    "scripts": {
+        "precommit": "npm test",
+        "prepush": "npm test",
+        "test": "grunt test",
+        "cover": "grunt cover",
+        "bump": "./scripts/bump.js",
+        "quality": "grunt quality"
+    },
+    "bin": {
+        "bump": "./scripts/bump.js",
+        "prepare-environment": "./scripts/prepare-environment.js"
+    },
+    "author": "Calvin Mann <calvinmann+npm@gmail.com>",
+    "license": "GPL-3.0",
+    "devDependencies": {
+        "app-root-path": "latest",
+        "chai": "latest",
+        "chai-as-promised": "latest",
+        "chai-spies": "latest",
+        "command-exists": "latest",
+        "eslint": "latest",
+        "grunt": "latest",
+        "grunt-complexity": "latest",
+        "grunt-eslint": "latest",
+        "grunt-jscpd": "latest",
+        "grunt-jsonlint": "latest",
+        "grunt-mocha-test": "latest",
+        "grunt-shell": "latest",
+        "husky": "latest",
+        "istanbul": "latest",
+        "minimist": "latest",
+        "mocha": "latest",
+        "mockery": "latest",
+        "npm": "latest",
+        "parse-git-config": "latest",
+        "winston-spy": "latest"
+    },
+    "dependencies": {
+        "moment": "latest"
+    },
+    "engines": {
+        "node": "undefined",
+        "npm": "undefined"
+    },
+    "keywords": ""
 }
