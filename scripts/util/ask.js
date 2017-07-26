@@ -61,7 +61,12 @@ function ask(txt, def, options) {
         /** Checks the answer through an options funciton */
         function checkFunction(answer) {
             try {
-                return options(answer);
+                const res = options(answer);
+                if (res instanceof Promise) {
+                    return res;
+                } else {
+                    return Promise.resolve(res);
+                }
             } catch (ex) {
                 console.warn(`Answer "${answer}" is invalid. ${ex.message}`);
                 return ask(txt, def, options);
