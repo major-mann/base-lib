@@ -471,6 +471,7 @@ function noneRegexQuestion(txt, def, options) {
         if (ans !== NONE && !options.exec(ans)) {
             throw new Error(`Invalid answer ${ans}`);
         }
+        return ans;
     });
 }
 
