@@ -227,7 +227,7 @@ function savePackageJson() {
     } else {
         const packagePath = path.join(appRoot, 'package.json');
         const text = JSON.stringify(destPackage, null, PACKAGE_SPACE);
-        return sys.write(packagePath, text);
+        return sys.write(packagePath, `${text}\n`);
     }
 }
 

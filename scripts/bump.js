@@ -103,7 +103,7 @@ function bumpPackage() {
         pkg.version = version.join('.');
         const str = JSON.stringify(pkg, undefined, 2);
         return new Promise(function promiseHandler(resolve, reject) {
-            fs.writeFile(appRoot.resolve(PACKAGE), str, { encoding: 'utf8' }, function onFileWritten(err) {
+            fs.writeFile(appRoot.resolve(PACKAGE), `${str}\n`, { encoding: 'utf8' }, function onFileWritten(err) {
                 if (err) {
                     reject(err);
                 } else {
