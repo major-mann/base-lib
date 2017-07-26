@@ -44,8 +44,8 @@
         "moment": "latest"
     },
     "engines": {
-        "node": "undefined",
-        "npm": "undefined"
+        "node": ">=8.0.0",
+        "npm": ">=5.0.0"
     },
     "keywords": ""
 }
