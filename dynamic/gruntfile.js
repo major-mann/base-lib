@@ -1,9 +1,7 @@
-const path = require('../src/path-helper.js'),
-    nodePath = require('path');
+const path = require('../src/path-helper.js');
 
 module.exports = function generateGruntFile() {
-    const mainFile = nodePath.join(__dirname, '../src/grunt.js');
-    const target = path.requireName(mainFile);
-    return `const grunt = require('${target}');\n` +
-        `module.exports = grunt([], {}, []);`;
+    const target = path.srcPath();
+    return `const grunt = require('${target}').grunt;\n` +
+        `module.exports = grunt([], {}, []);\n`;
 };

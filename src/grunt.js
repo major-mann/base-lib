@@ -11,12 +11,13 @@ const MODULES = [
         'grunt-shell',
         'grunt-complexity',
         'grunt-jscpd',
-        'grunt-jsonlint'
+        'grunt-jsonlint',
+        'grunt-filenames'
     ],
     TASKS = [
-        ['test', 'quality', 'mochaTest:spec'],
         ['cover', 'shell:cover'],
-        ['quality', 'eslint', 'jscpd', 'jsonlint'],
+        ['quality', 'filenames', 'eslint', 'jscpd', 'jsonlint'],
+        ['test', 'quality', 'mochaTest:spec'],
         ['default', 'test', 'cover']
     ],
     CONFIG = {
@@ -80,6 +81,14 @@ const MODULES = [
                     indent: 4
                 }
             }
+        },
+        filenames: {
+            options: {
+                valid: /^[a-z0-9-.]+$/, // Kebab naming
+                except: ['node_modules'],
+                error: 'File {filename} needs to have kebab naming ({valid})'
+            },
+            src: ['**/*', '!node_modules/**']
         }
     };
 

@@ -9,8 +9,7 @@
         "test": "grunt test",
         "cover": "grunt cover",
         "bump": "./scripts/bump.js",
-        "quality": "grunt quality",
-        "install": "./scripts/post-install.js"
+        "quality": "grunt quality"
     },
     "bin": {
         "bump": "./scripts/bump.js",
@@ -28,6 +27,7 @@
         "grunt": "latest",
         "grunt-complexity": "latest",
         "grunt-eslint": "latest",
+        "grunt-filenames": "latest",
         "grunt-jscpd": "latest",
         "grunt-jsonlint": "latest",
         "grunt-mocha-test": "latest",

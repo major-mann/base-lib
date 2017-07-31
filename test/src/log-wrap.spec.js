@@ -303,7 +303,7 @@ describe('Log wrap', function () {
         it('should add the call location to the prefix if options.callLocation is truthy', function () {
             const log = logWrap(baseLog, { callLocation: true });
             log.error('foo bar baz');
-            expect(errArgs[0]).to.match(new RegExp(`\\[test/src/log-wrap.spec.js:\\d+.*\\].*foo bar baz`, 'i'));
+            expect(errArgs[0]).to.match(new RegExp(`\\[test/src/log-wrap\\.spec\\.js:\\d+.*\\].*foo bar baz`, 'i'));
         });
 
         it('should put the first project (non module) location in brackets', function () {

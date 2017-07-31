@@ -2,8 +2,11 @@
  * @module Bash. A module for executing commands.
  */
 
+const MODULES = 'node_modules';
+
 // Export the public API
 module.exports = {
+    consumerPath,
     exec,
     execRead,
     mkdir,
@@ -14,10 +17,16 @@ module.exports = {
     write
 };
 
-// Dependecies
+// Dependecies: WARNING WE CAN ONLY USE NODE DEPS AS SOME FUNCTIONS HERE ARE EXECUTED BEFORE WE HAVE DEPENDENCIES
 const spawn = require('child_process').spawn,
     path = require('path'),
     fs = require('fs');
+
+
+/** Attempts to find the path of the consumer */
+function consumerPath() {
+    return Promise.resolve(process.argv[1].split(MODULES)[0]);
+}
 
 /** Executes a command in the given working direcotry */
 function exec(dir, command, args, err) {
@@ -73,17 +82,24 @@ function mkdir(dir) {
 function copy(src, dest) {
     return new Promise(function promiseHandler(resolve, reject) {
         var write;
+        console.info(`Creating read stream from "${src}"`);
         const read = fs.createReadStream(src);
         read.on('error', onError);
-        read.on('readable', onReadable);
+        read.once('readable', onReadable);
 
         function onReadable() {
+            console.info(`Creating write stream to "${dest}"`);
             write = fs.createWriteStream(dest, {
                 autoClose: true
             });
-            write.on('open', () => read.pipe(write));
+            write.on('open', onWriteOpened);
             write.on('error', onError);
             write.on('finish', resolve);
+
+            function onWriteOpened() {
+                console.info(`Piping data from "${src}" to ${dest}`);
+                read.pipe(write);
+            }
         }
 
         /** Called if an error has occured with either stream */
@@ -141,6 +157,7 @@ function read(file) {
 }
 
 function write(file, content) {
+    console.info(`Writing ${Buffer.byteLength(content)} to "${file}"`);
     return new Promise(function promiseHandler(resolve, reject) {
         fs.writeFile(file, content, function onWritten(err) {
             if (err) {

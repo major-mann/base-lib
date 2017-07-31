@@ -1,3 +1,7 @@
+# TODO
+* Add checks for require usage (file / directory exists... file always uses name with extension)
+* Make sure we are not leaving a modified package.json
+
 # Base library
 A boilerplate project for starting other projects, and keeping them up to date.
 
@@ -116,6 +120,7 @@ The grunt base is used to provide common quality control grunt structures in suc
 * `grunt-complexity` Used to check code complexity
 * `grunt-jscpd` Used to ensure there are no copy pasted blocks
 * `grunt-jsonlint` Used to check JSON formatting is appropriate
+* `grunt-filenames` Used to ensure filenames use kebab naming
 
 ### Default tasks
 
@@ -126,9 +131,10 @@ The grunt base is used to provide common quality control grunt structures in suc
 * `mochaTest:spec` Runs all tests in the test directory
 * `mochaTest:single` Runs a single test specified by the `--target` option
 * `shell:cover` Runs istanbul coverage on the test command
+* `filenames` Checks all filenames use kebab naming
 * `test` Runs the `quality` and `mochatest:spec` commands
 * `cover` Runs the `shell:cover` command
-* `quality` Runs the `eslint`, `jscpd` and `jsonlint` commands
+* `quality` Runs the `filenames`, `eslint`, `jscpd`, and `jsonlint` commands
 * `default` Runs the `test` and `cover` commands
 
 ### Extending

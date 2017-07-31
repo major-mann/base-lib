@@ -1,6 +1,8 @@
 // Expose the public API
 module.exports = {
     consumerPath,
+    libraryPath,
+    srcPath,
     requireName,
     resolve,
     toString: consumerPath
@@ -11,21 +13,43 @@ const NODE_MODULES = 'node_modules';
 
 // Dependecies
 const path = require('path'),
+    npmPackage = require('../package.json'),
     appRoot = require('app-root-path');
 
 /** Gets the value to use  */
 function consumerPath() {
-    const parts = __dirname.split(NODE_MODULES);
+    // TODO: If we run grunt test, this is wrong....
+    //  Need to check if global... if global use cwd...
+    const parts = process.argv[1].split(NODE_MODULES);
+    let res;
     if (parts.length > 1) {
-        return `${parts[0]}/`;
+        res = parts[0];
     } else {
-        return `${appRoot.toString()}/`;
+        res = appRoot.toString();
+    }
+    if (!res.endsWith('/')) {
+        res += '/';
+    }
+    return res;
+}
+
+/** Gets the path of this library as referenced from the consumer. */
+function libraryPath() {
+    return `${consumerPath()}${NODE_MODULES}/${npmPackage.name}`;
+}
+
+function srcPath() {
+    const parts = process.argv[1].split(NODE_MODULES);
+    if (parts.length > 1) {
+        return npmPackage.name;
+    } else {
+        return './src';
     }
 }
 
 /** Gets the value to use in require to reference the module */
 function requireName(from) {
-    const parts = __dirname.split(NODE_MODULES);
+    const parts = from.split(NODE_MODULES);
     const root = path.join(__dirname, '..');
     if (parts.length === 1) {
         // We are consuming ourselves.
@@ -35,9 +59,11 @@ function requireName(from) {
             return root;
         }
     } else {
-        // We need the relative name between the last node_modules and the project root.
-        const base = parts.slice(0, parts.length - 2).join(NODE_MODULES);
-        return path.relative(base, root).replace(/\\/g, '/');
+        // We need everything from the first node modules
+        return parts
+            .slice(1)
+            .join(NODE_MODULES)
+            .slice(1); // This get's rid of leading /
     }
 }
 
