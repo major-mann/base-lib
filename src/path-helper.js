@@ -13,13 +13,11 @@ const NODE_MODULES = 'node_modules';
 
 // Dependecies
 const path = require('path'),
-    npmPackage = require('../package.json'),
-    appRoot = require('app-root-path');
+    appRoot = require('app-root-path'),
+    npmPackage = require('../package.json');
 
 /** Gets the value to use  */
 function consumerPath() {
-    // TODO: If we run grunt test, this is wrong....
-    //  Need to check if global... if global use cwd...
     const parts = process.argv[1].split(NODE_MODULES);
     let res;
     if (parts.length > 1) {
@@ -30,7 +28,23 @@ function consumerPath() {
     if (!res.endsWith('/')) {
         res += '/';
     }
-    return res;
+
+    const prefix = globalPrefix();
+    if (res.startsWith(prefix)) {
+        // Global, go with CWD
+        return process.cwd();
+    } else {
+        return res;
+    }
+
+    function globalPrefix() {
+        const gpath = process.env._;
+        if (gpath) {
+            return path.join(gpath, '../..');
+        } else {
+            return undefined;
+        }
+    }
 }
 
 /** Gets the path of this library as referenced from the consumer. */

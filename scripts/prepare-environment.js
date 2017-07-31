@@ -377,12 +377,19 @@ function prepEnv() {
             console.trace(`Processing dynamic module "${name}"`);
             const dynMod = require(`../dynamic/${name}.js`);
             const content = dynMod();
-            if (argv.nowrite) {
-                console.error(`Would have written dynamic file "${dest}"`);
-                return undefined;
+            if (content instanceof Promise) {
+                return content.then(onGotContent);
             } else {
-                console.trace(`Writing ${Buffer.byteLength(content)} to "${dest}"`);
-                return sys.write(dest, content);
+                return onGotContent(content);
+            }
+            function onGotContent(content) {
+                if (argv.nowrite) {
+                    console.error(`Would have written dynamic file "${dest}"`);
+                    return undefined;
+                } else {
+                    console.trace(`Writing ${Buffer.byteLength(content)} to "${dest}"`);
+                    return sys.write(dest, content);
+                }
             }
         }
     }
