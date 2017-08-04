@@ -14,6 +14,7 @@ function prepEnv() {
     const PACKAGE_SPACE = 4,
         LINK_ARG = 'ln',
         HEADING_LENGTH = 20,
+        VERSION_PART_COUNT = 3,
         // TODO: Maybe this should be a license file and SEE LICENSE IN license.. Maybe all rights reserved?
         LICENSE = 'GPL-3.0',
         VERSION = '0.0.1',
@@ -89,6 +90,7 @@ function prepEnv() {
             .then(() => dynamic(appRoot, 'gruntfile', 'gruntfile.js', true))
             .then(() => dynamic(appRoot, 'nvmrc', '.nvmrc', true))
             .then(() => dynamic(appRoot, 'testing-helper', 'test/testing-helper.js', true))
+            .then(() => dynamic(appRoot, 'readme', 'readme.md', true))
             // File copies (or links if LINK_ARG was supplied)
             .then(() => fileLink(appRoot, 'environment/gitignore', '.gitignore', true))
             .then(() => fileLink(appRoot, 'environment/eslintignore', '.eslintignore', true))
@@ -184,14 +186,14 @@ function prepEnv() {
                     .then(answer => destPackage.version = answer)
                     .then(() => noneRegexQuestion(
                         'Enter the minumum node version',
-                        destPackage.engines && destPackage.engines.node || process.version.slice(1),
+                        previousMajor(destPackage.engines && destPackage.engines.node || process.version.slice(1)),
                         FREE_VERSION_MATCH)
                     )
                     .then(ensureEngines)
                     .then(answer => destPackage.engines.node = `${answer}`)
                     .then(() => noneRegexQuestion(
                         'Enter the minumum NPM version',
-                        destPackage.engines && destPackage.engines.npm || npmMod.version,
+                        previousMajor(destPackage.engines && destPackage.engines.npm || npmMod.version),
                         FREE_VERSION_MATCH)
                     )
                     .then(ensureEngines)
@@ -297,10 +299,12 @@ function prepEnv() {
             .then(answer => destPackage.name = answer)
             .then(() => question('Enter the initial version', VERSION, VERSION_MATCH))
             .then(answer => destPackage.version = answer)
-            .then(() => noneRegexQuestion('Enter the minumum node version', process.version.slice(1), VERSION_MATCH))
+            .then(() => noneRegexQuestion('Enter the minumum node version',
+                previousMajor(process.version.slice(1)),
+                VERSION_MATCH))
             .then(ensureEngines)
             .then(answer => answer && (destPackage.engines.node = `>=${answer}`))
-            .then(() => noneRegexQuestion('Enter the minumum NPM version', npmMod.version, VERSION_MATCH))
+            .then(() => noneRegexQuestion('Enter the minumum NPM version', previousMajor(npmMod.version), VERSION_MATCH))
             .then(ensureEngines)
             .then(answer => answer && (destPackage.engines.npm = `>=${answer}`))
             .then(() => question('Enter the license type', LICENSE))
@@ -376,7 +380,9 @@ function prepEnv() {
         function doProcess() {
             console.trace(`Processing dynamic module "${name}"`);
             const dynMod = require(`../dynamic/${name}.js`);
-            const content = dynMod();
+            const content = dynMod({
+                root: appRoot
+            });
             if (content instanceof Promise) {
                 return content.then(onGotContent);
             } else {
@@ -497,6 +503,20 @@ function prepEnv() {
             return Promise.resolve(def || options && options[0] || '');
         } else {
             return ask(txt, def, options);
+        }
+    }
+
+    function previousMajor(version) {
+        if (version) {
+            const parts = version.split('.');
+            if (parts.length === VERSION_PART_COUNT) {
+                if (parseInt(parts[0], 10) > 0) {
+                    return [parts[0], '0', '0'].join('.');
+                }
+            }
+            return version;
+        } else {
+            return version;
         }
     }
 
