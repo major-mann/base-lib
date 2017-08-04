@@ -51,6 +51,15 @@ module.exports = function intializeChaiEnvironment() {
             useCleanCache: true,
             warnOnUnregistered: false
         });
+
+        global.chai.spy.callsback = function callsback(err, result, optional) {
+            return chai.spy(function callbackHandler() {
+                if (optional && typeof arguments[arguments.length - 1] !== 'function') {
+                    return;
+                }
+                arguments[arguments.length - 1](err, result);
+            });
+        };
     });
 
     global.afterEach(function afterEveryTest() {
