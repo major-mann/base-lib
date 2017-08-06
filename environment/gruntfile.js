@@ -60,7 +60,6 @@ const MODULES = [
         },
         jsonlint: {
             all: {
-                // TODO: Exclude package.json from this (since NPM decides it's own rules)
                 src: ['**/*.json'],
                 options: {
                     format: true,

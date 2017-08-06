@@ -383,7 +383,7 @@ describe('Log wrap', function () {
             expect(wrapped.stat.increment).to.be.a('function');
             wrapped.stat.increment('foo bar baz');
             // TODO: Add with ... chai-spies seems to be misbehaving when trying to use it?
-            expect(statProvider.increment).to.have.been.called.exactly(1);
+            expect(statProvider.increment).to.have.been.called.exactly(1); // .with('foo bar baz');
         });
         it('should have a function named "decrement"', function () {
             expect(wrapped.stat.decrement).to.be.a('function');

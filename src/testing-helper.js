@@ -4,6 +4,7 @@
 
 // Load middleware and modules to expose.
 const chai = require('chai'),
+    sinon = require('sinon'),
     spies = require('chai-spies'),
     cap = require('chai-as-promised'),
     mockery = require('mockery'),
@@ -23,6 +24,7 @@ module.exports = function intializeChaiEnvironment() {
         Date: {
             now: Date.now
         },
+        /* eslint-disable no-console */
         console: {
             log: console.log,
             info: console.info,
@@ -34,6 +36,7 @@ module.exports = function intializeChaiEnvironment() {
             trace: console.trace,
             assert: console.assert
         }
+        /* eslint-enable no-console */
     };
 
     // Add middleware to chai
@@ -42,6 +45,7 @@ module.exports = function intializeChaiEnvironment() {
 
     // Exose chai, and it's expect function as global variables
     global.chai = chai;
+    global.sinon = sinon;
     global.expect = chai.expect;
     global.mockery = mockery;
     global.mock = mocks;
