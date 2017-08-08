@@ -4,6 +4,10 @@ env:
 
 globals:
     chai: true
+    sinon: true
+    expect: true
+    mockery: true
+    mock: true
 
 rules:
     max-len:
