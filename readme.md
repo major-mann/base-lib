@@ -36,6 +36,9 @@ quality control.
 1. `mkdir my-new-proj`
 1. `cd my-new-proj`
 1. `npm install ssh+git@github.com:major-mann/base-lib.git`
+1. `npm init` - Note: I hope to remove this step in future - You can stick to the defaults here, you will be asked again
+                in the prepare environment phase. Any answers you do give here will be used as defaults in the environment
+                preparation phase.
 1. `./node_modules/.bin/prepare-environment`
 
 ## Updating

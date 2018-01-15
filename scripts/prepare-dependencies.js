@@ -1,3 +1,9 @@
+/**
+ * @module DependencyPreparation Installs the dev dependencies required for environment preparation.
+ * TODO: Change this module so that it works without a destination package json (Including cleaning up any
+ *  modules installed by the process)
+ */
+
 const spawn = require('child_process').spawn,
     path = require('path'),
     sys = require('./util/sys.js'),
