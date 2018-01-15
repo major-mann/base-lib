@@ -1,6 +1,6 @@
 # TODO
 * Add checks for require usage (file / directory exists... file always uses name with extension)
-* Make sure we are not leaving a modified package.json
+* Make sure we are not leaving a modified package.json with scripts
 
 # Base library
 A boilerplate project for starting other projects, and keeping them up to date.

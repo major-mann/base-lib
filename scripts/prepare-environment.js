@@ -86,7 +86,6 @@ function prepEnv() {
             .then(() => keep(appRoot, 'test/mocks'))
             // Dynamically generated files
             .then(() => heading('Files'))
-            .then(() => dynamic(appRoot, 'eslintrc', '.eslintrc', true))
             .then(() => dynamic(appRoot, 'gruntfile', 'gruntfile.js', true))
             .then(() => dynamic(appRoot, 'nvmrc', '.nvmrc', true))
             .then(() => dynamic(appRoot, 'testing-helper', 'test/testing-helper.js', true))
@@ -98,6 +97,7 @@ function prepEnv() {
             .then(() => fileLink(appRoot, 'environment/istanbul.yml', '.istanbul.yml', true))
             .then(() => fileLink(appRoot, 'environment/mocha.opts', 'test/mocha.opts', true))
             // Copied files
+            .then(() => copy(appRoot, 'environment/eslintrc.js', '.eslintrc.js', true))
             .then(() => copy(appRoot, 'environment/test.editorconfig', 'test/.editorconfig', true))
             .then(() => copy(appRoot, 'environment/test.eslintrc', 'test/.eslintrc', true))
             // Package.json
