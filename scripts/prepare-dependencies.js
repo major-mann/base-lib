@@ -1,30 +1,11 @@
 const spawn = require('child_process').spawn,
+    path = require('path'),
     sys = require('./util/sys.js'),
     sourcePackage = require('../package.json');
 
-module.exports = function doDependencyChecks() {
-    if (checkDependencies()) {
-        // Everything is already here!
-        return Promise.resolve();
-    } else {
-        return exec();
-    }
+module.exports = async function doDependencyChecks() {
+    await exec();
 };
-
-function checkDependencies() {
-    return Object.keys(sourcePackage.devDependencies).every(checkDep);
-
-    /** Checks an individual dependency */
-    function checkDep(name) {
-        try {
-            require(name);
-            return true;
-        } catch (ex) {
-            console.info(`Dependency was not found "${name}"`);
-            return false;
-        }
-    }
-}
 
 function exec() {
     return sys.consumerPath()
@@ -35,17 +16,39 @@ function exec() {
         });
 }
 
-function prepNpmInstall(appRoot) {
-    const packages = Object.keys(sourcePackage.devDependencies)
-        .map(p => `${p}@${sourcePackage.devDependencies[p]}`);
-    return npmInstall(appRoot, packages);
+async function prepNpmInstall(appRoot) {
+    let destPackage, flag;
+    const destPackagePath = path.join(appRoot, 'package.json');
+    const txt = await sys.read(destPackagePath);
+    try {
+        destPackage = JSON.parse(txt);
+    } catch (ex) {
+        throw new Error(`Unable to parse destination package.json! ${ex.message}`);
+    }
+
+    if (sourcePackage.devDependencies) {
+        destPackage.devDependencies = destPackage.devDependencies || {};
+        Object.keys(sourcePackage.devDependencies).forEach(copyDependency);
+        if (flag) {
+            const txt = JSON.stringify(destPackage, null, 4);
+            await sys.write(destPackagePath, txt);
+            await npmInstall(appRoot);
+        }
+    }
+
+    function copyDependency(name) {
+        if (!destPackage.devDependencies[name] && sourcePackage.devDependencies[name] === 'latest') {
+            flag = true;
+            destPackage.devDependencies[name] = sourcePackage.devDependencies[name];
+        }
+    }
 }
 
-function npmInstall(appRoot, packages) {
+function npmInstall(appRoot) {
     return new Promise(function promiseHandler(resolve, reject) {
-        const args = ['install', '--save-dev', ...packages];
+        const args = ['install'];
         console.info(`Running "npm ${args.join(' ')}" (In "${appRoot}"):`);
-        const npm = spawn('npm', ['install', '--save-dev', ...packages], {
+        const npm = spawn('npm', args, {
             cwd: appRoot,
             stdio: ['ignore', 'pipe', 'pipe']
         });

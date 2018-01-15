@@ -4,6 +4,7 @@
  * @module Environment preparation script. This script is responsible for taking a target project, copying
  *  required config and code files and preparing the directory structure.
  */
+
 const depends = require('./prepare-dependencies.js');
 depends()
     .then(prepEnv)
@@ -26,15 +27,15 @@ function prepEnv() {
         URI_MATCH = /^(([^:/?#]+):)(\/\/([^/?#]*))([^?#]*)(\?([^#]*))?(#(.*))?/;
 
     // Dependecies
-    const minimist = require('minimist'),
-        npmMod = require('npm'),
-        path = require('path'),
-        fs = require('fs'),
-        sys = require('./util/sys.js'),
-        git = require('./util/git.js'),
-        npm = require('./util/npm.js'),
-        ask = require('./util/ask.js'),
-        sourcePackage = require('../package.json');
+   const minimist = require('minimist'),
+       npmMod = require('npm'),
+       path = require('path'),
+       fs = require('fs'),
+       sys = require('./util/sys.js'),
+       git = require('./util/git.js'),
+       npm = require('./util/npm.js'),
+       ask = require('./util/ask.js'),
+       sourcePackage = require('../package.json');
 
     // Globals
     let local, argv, destPackage;
@@ -99,7 +100,7 @@ function prepEnv() {
             // Copied files
             .then(() => copy(appRoot, 'environment/eslintrc.js', '.eslintrc.js', true))
             .then(() => copy(appRoot, 'environment/test.editorconfig', 'test/.editorconfig', true))
-            .then(() => copy(appRoot, 'environment/test.eslintrc', 'test/.eslintrc', true))
+            .then(() => copy(appRoot, 'environment/test.eslintrc.js', 'test/.eslintrc.js', true))
             // Package.json
             .then(() => heading('Package.json'))
             .then(() => loadPackageJson(appRoot))
