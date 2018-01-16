@@ -22,7 +22,6 @@ const spawn = require('child_process').spawn,
     path = require('path'),
     fs = require('fs');
 
-
 /** Attempts to find the path of the consumer */
 function consumerPath() {
     return Promise.resolve(process.argv[1].split(MODULES)[0]);
@@ -81,24 +80,24 @@ function mkdir(dir) {
 /** Copies src to dest (will overwrite) */
 function copy(src, dest) {
     return new Promise(function promiseHandler(resolve, reject) {
-        var write;
+        var writeStream;
         console.info(`Creating read stream from "${src}"`);
-        const read = fs.createReadStream(src);
-        read.on('error', onError);
-        read.once('readable', onReadable);
+        const readStream = fs.createReadStream(src);
+        readStream.on('error', onError);
+        readStream.once('readable', onReadable);
 
         function onReadable() {
             console.info(`Creating write stream to "${dest}"`);
-            write = fs.createWriteStream(dest, {
+            writeStream = fs.createWriteStream(dest, {
                 autoClose: true
             });
-            write.on('open', onWriteOpened);
-            write.on('error', onError);
-            write.on('finish', resolve);
+            writeStream.on('open', onWriteOpened);
+            writeStream.on('error', onError);
+            writeStream.on('finish', resolve);
 
             function onWriteOpened() {
                 console.info(`Piping data from "${src}" to ${dest}`);
-                read.pipe(write);
+                readStream.pipe(writeStream);
             }
         }
 
@@ -107,9 +106,9 @@ function copy(src, dest) {
             reject(err);
 
             // Cleanup
-            read.destroy();
-            if (write) {
-                write.end();
+            readStream.destroy();
+            if (writeStream) {
+                writeStream.end();
             }
         }
     });

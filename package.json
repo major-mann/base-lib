@@ -1,6 +1,6 @@
 {
     "name": "@gmsllc-private/base-lib",
-    "version": "0.0.9",
+    "version": "0.0.10",
     "description": "A base library that includes a build pipeline and QA tools (testing, linting etc)",
     "main": "src/index.js",
     "scripts": {
@@ -18,6 +18,7 @@
     "author": "Calvin Mann <calvinmann+npm@gmail.com>",
     "license": "GPL-3.0",
     "devDependencies": {
+        "@gmsllc-private/eslint-config": "^1.0.5",
         "chai": "latest",
         "chai-as-promised": "latest",
         "chai-spies": "latest",
@@ -27,7 +28,7 @@
         "grunt-complexity": "latest",
         "grunt-eslint": "latest",
         "grunt-filenames": "latest",
-        "grunt-jscpd": "latest",
+        "grunt-jsinspect": "latest",
         "grunt-jsonlint": "latest",
         "grunt-mocha-test": "latest",
         "grunt-shell": "latest",
@@ -42,7 +43,6 @@
         "winston-spy": "latest"
     },
     "dependencies": {
-        "@gmsllc-private/eslint-config": "^1.0.1",
         "app-root-path": "latest",
         "moment": "latest"
     },

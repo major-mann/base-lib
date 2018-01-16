@@ -19,14 +19,22 @@ const PACKAGE = 'package.json',
     VERSION_COUNT = 3,
     MAJOR = 'major',
     MINOR = 'minor',
-    REVISION = 'revision';
+    REVISION = 'revision',
+    BASE_TEN = 10;
 
-// Dependencies
-const commandExists = require('command-exists'),
-    appRoot = require('../src/path-helper.js'),
-    minimist = require('minimist'),
-    spawn = require('child_process').spawn,
+// Core dependencies
+const childProcess = require('child_process'),
     fs = require('fs');
+
+// Module Dependencies
+const commandExists = require('command-exists'),
+    minimist = require('minimist');
+
+// Local dependencies
+const appRoot = require('../src/path-helper.js');
+
+// Globals
+const spawn = childProcess.spawn;
 
 // Do the bump
 bumpPackage();
@@ -74,7 +82,7 @@ function bumpPackage() {
 
     function printHelp() {
         if (argv.help) {
-            console.info(`Usage: bump [options]`);
+            console.info('Usage: bump [options]');
             console.info('\t--revision [Default] Bumps the version revision');
             console.info('\t--minor Bumps the minor version number');
             console.info('\t--major Bumps the major version number');
@@ -115,26 +123,38 @@ function bumpPackage() {
     }
 
     function getVersion() {
-        var version = pkg.version;
-        if (version) {
-            version = version.split('.')
-                .map(v => parseInt(v, 10))
-                .map(v => isNaN(v) ? 0 : v);
-            while (version.length > VERSION_COUNT) {
-                version.pop();
+        var pkgVersion = pkg.version;
+        if (pkgVersion) {
+            pkgVersion = pkgVersion.split('.').map(noneForNaN);
+            while (pkgVersion.length > VERSION_COUNT) {
+                pkgVersion.pop();
             }
-            while (version.length < VERSION_COUNT) {
-                version.push(0);
+            while (pkgVersion.length < VERSION_COUNT) {
+                pkgVersion.push(0);
             }
-            return version;
+            return pkgVersion;
         } else {
             return [0, 0, 0];
         }
+
+        /**
+         * Takes a value, parses it to int and returns it if it is not NaN. If it is NaN 0 is returned.
+         * @param {string} v The value to convert
+         * @returns {number} A number representation of the value, or 0
+         */
+        function noneForNaN(v) {
+            v = parseInt(v, BASE_TEN);
+            if (isNaN(v)) {
+                return 0;
+            } else {
+                return v;
+            }
+        }
     }
 
-    function increment(update) {
+    function increment(part) {
         logInfo('increment version');
-        switch (update) {
+        switch (part) {
             case MAJOR:
                 version[0]++;
                 version[1] = 0;
@@ -149,7 +169,6 @@ function bumpPackage() {
                 version[2]++;
                 break;
         }
-
     }
 
     function ensureNoUnstaged() {
@@ -169,17 +188,21 @@ function bumpPackage() {
         });
     }
 
-    /** Executes the handler if git exists */
+    /**
+     * Executes the handler if git exists
+     * @param {function} handler The function to call once git has been confirmed.
+     * @returns {function} A function that can be executed to perform the git execution.
+     */
     function gitExec(handler) {
         return function gitExecHandler() {
             return new Promise(function promiseHandler(resolve, reject) {
-                commandExists(GIT, function onCheckedForCommand(err, exists) {
-                    if (err) {
-                        reject(err);
+                commandExists(GIT, function onCheckedForCommand(commandErr, exists) {
+                    if (commandErr) {
+                        reject(commandErr);
                     } else if (exists) {
                         const path = appRoot.resolve(GIT_DIRECTORY);
-                        fs.access(path, fs.constants.R_OK, function onAccessChecked(err) {
-                            if (!err) {
+                        fs.access(path, fs.constants.R_OK, function onAccessChecked(accessErr) {
+                            if (!accessErr) {
                                 try {
                                     const res = handler();
                                     if (res instanceof Promise) {
@@ -208,21 +231,27 @@ function bumpPackage() {
 
     function commitPackage() {
         return stagePackage()
-            .then(commitPackage);
+            .then(doPackageCommit);
 
         function stagePackage() {
             logInfo('Staging package.json');
             return execCommand('git', ['add', 'package.json'], { cwd: String(appRoot) });
         }
 
-        function commitPackage() {
+        function doPackageCommit() {
             logInfo('Committing package.json changes');
             return execCommand('git', ['commit', '-m', './scripts/bump.js committing package.json version update'],
                 { cwd: String(appRoot) });
         }
     }
 
-    /** A command execute wrapper making it easier to deal with */
+    /**
+     * A command execute wrapper making it easier to deal with
+     * @param {string} command The command to execute
+     * @param {array<string>} args The arguments to pass to the command.
+     * @returns {Promise} A promise that will be resolved once the command has completed with a 0 exit code, or rejected
+     *  with error output in the case of a non-zero code.
+     */
     function execCommand(command, args) {
         return new Promise(function promiseHandler(resolve, reject) {
             const comm = spawn(command, args),
@@ -235,7 +264,9 @@ function bumpPackage() {
                     resolve();
                 } else {
                     const msg = err.join('') || `Unknown error executing command "${command}"!`;
-                    reject(new Error(msg));
+                    const ex = new Error(msg);
+                    ex.code = code;
+                    reject(ex);
                 }
             }
 
@@ -245,7 +276,10 @@ function bumpPackage() {
         });
     }
 
-    /** Performs a console.error call in red */
+    /**
+     * Performs a console.error call in red
+     * @param {string} err The error message to print.
+     */
     function logError(err) {
         console.error(`\x1b[31m${err}\x1b[0m`);
     }

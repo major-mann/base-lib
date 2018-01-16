@@ -4,10 +4,15 @@
  *  modules installed by the process)
  */
 
-const spawn = require('child_process').spawn,
-    path = require('path'),
-    sys = require('./util/sys.js'),
+const childProcess = require('child_process'),
+    path = require('path');
+
+//
+const sys = require('./util/sys.js'),
     sourcePackage = require('../package.json');
+
+// Globals
+const spawn = childProcess.spawn;
 
 module.exports = async function doDependencyChecks() {
     await exec();
@@ -36,8 +41,8 @@ async function prepNpmInstall(appRoot) {
         destPackage.devDependencies = destPackage.devDependencies || {};
         Object.keys(sourcePackage.devDependencies).forEach(copyDependency);
         if (flag) {
-            const txt = JSON.stringify(destPackage, null, 4);
-            await sys.write(destPackagePath, txt);
+            const writeTxt = JSON.stringify(destPackage, null, 4);
+            await sys.write(destPackagePath, writeTxt);
             await npmInstall(appRoot);
         }
     }

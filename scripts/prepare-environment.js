@@ -16,8 +16,7 @@ function prepEnv() {
         LINK_ARG = 'ln',
         HEADING_LENGTH = 20,
         VERSION_PART_COUNT = 3,
-        // TODO: Maybe this should be a license file and SEE LICENSE IN license.. Maybe all rights reserved?
-        LICENSE = 'GPL-3.0',
+        LICENSE = 'SEE LICENSE IN license',
         VERSION = '0.0.1',
         NONE = 'none',
         ENTRY = 'src/index.js',
@@ -26,16 +25,20 @@ function prepEnv() {
         EMAIL_MATCH = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
         URI_MATCH = /^(([^:/?#]+):)(\/\/([^/?#]*))([^?#]*)(\?([^#]*))?(#(.*))?/;
 
-    // Dependecies
-   const minimist = require('minimist'),
-       npmMod = require('npm'),
-       path = require('path'),
-       fs = require('fs'),
-       sys = require('./util/sys.js'),
-       git = require('./util/git.js'),
-       npm = require('./util/npm.js'),
-       ask = require('./util/ask.js'),
-       sourcePackage = require('../package.json');
+    // Core dependencies
+    const path = require('path'),
+        fs = require('fs');
+
+    // Module dependencies
+    const minimist = require('minimist'),
+        npmMod = require('npm');
+
+    // Project dependecies
+    const sys = require('./util/sys.js'),
+        git = require('./util/git.js'),
+        npm = require('./util/npm.js'),
+        ask = require('./util/ask.js'),
+        sourcePackage = require('../package.json');
 
     // Globals
     let local, argv, destPackage;
@@ -51,7 +54,7 @@ function prepEnv() {
         argv = minimist(process.argv.slice(2));
 
         if (argv.help) {
-            console.info(`Usage: prepare-environment [options] [ln]`);
+            console.info('Usage: prepare-environment [options] [ln]');
             console.info('\tln Link files instead of copying where appropriate');
             console.info('\t--silent Use all defaults');
             console.info('\t--nowrite Do everything except persist changes');
@@ -99,6 +102,7 @@ function prepEnv() {
             .then(() => fileLink(appRoot, 'environment/istanbul.yml', '.istanbul.yml', true))
             .then(() => fileLink(appRoot, 'environment/mocha.opts', 'test/mocha.opts', true))
             // Copied files
+            .then(() => copy(appRoot, 'environment/license', 'license', false))
             .then(() => copy(appRoot, 'environment/eslintrc.js', '.eslintrc.js', true))
             .then(() => copy(appRoot, 'environment/test.editorconfig', 'test/.editorconfig', true))
             .then(() => copy(appRoot, 'environment/test.eslintrc.js', 'test/.eslintrc.js', true))
@@ -200,7 +204,7 @@ function prepEnv() {
                     )
                     .then(ensureEngines)
                     .then(answer => destPackage.engines.npm = `${answer}`)
-                    .then(() => question('Enter the license type', destPackage.license))
+                    .then(() => question('Enter the license type', destPackage.license || LICENSE))
                     .then(answer => destPackage.license = answer)
                     .then(() => question('Enter a description for the package', destPackage.description))
                     .then(answer => destPackage.description = answer)
@@ -210,7 +214,7 @@ function prepEnv() {
                     .then(details => destPackage.author = details, destPackage.author)
                     .then(() => git.origin(appRoot), ans => !ans || URI_MATCH.exec(ans))
                     .then(orig => question('Git repository', orig || destPackage.repository && destPackage.repository.url))
-                    .then(answer => destPackage.repository = answer ? { type: 'git', url: answer } : undefined)
+                    .then(answer => processRepoAnswer(destPackage, answer))
                     .then(() => question('Keywords', destPackage.keywords))
                     .then(answer => destPackage.keywords = answer, destPackage.keywords);
             }
@@ -319,7 +323,7 @@ function prepEnv() {
             .then(details => destPackage.author = details)
             .then(() => git.origin(appRoot), ans => !ans || URI_MATCH.exec(ans))
             .then(origin => question('Git repository', origin))
-            .then(answer => destPackage.repository = answer ? { type: 'git', url: answer } : undefined)
+            .then(answer => processRepoAnswer(destPackage, answer))
             .then(() => question('Keywords'))
             .then(answer => destPackage.keywords = answer);
     }
@@ -332,16 +336,27 @@ function prepEnv() {
             .then(details => `${details.name} <${details.email}>`);
 
         /** Ensures the supplied data is available on the object */
-        function ensureData(data, name, question, check) {
+        function ensureData(data, name, questionText, check) {
             if (data[name]) {
                 // Note: we return data for chaining
                 return data;
             } else {
-                return question(question, undefined, check)
+                return question(questionText, undefined, check)
                     .then(ans => data[name] = ans)
                     // Note: we return data for chaining
                     .then(() => data);
             }
+        }
+    }
+
+    function processRepoAnswer(pkg, answer) {
+        if (answer) {
+            pkg.repository = {
+                type: 'git',
+                url: answer
+            };
+        } else {
+            pkg.repository = undefined;
         }
     }
 
@@ -390,13 +405,15 @@ function prepEnv() {
             } else {
                 return onGotContent(content);
             }
-            function onGotContent(content) {
+
+            /** Called to write the content */
+            function onGotContent(txt) {
                 if (argv.nowrite) {
                     console.error(`Would have written dynamic file "${dest}"`);
                     return undefined;
                 } else {
-                    console.trace(`Writing ${Buffer.byteLength(content)} to "${dest}"`);
-                    return sys.write(dest, content);
+                    console.trace(`Writing ${Buffer.byteLength(txt)} to "${dest}"`);
+                    return sys.write(dest, txt);
                 }
             }
         }
@@ -457,16 +474,16 @@ function prepEnv() {
     function keep(appRoot, directory) {
         directory = path.join(appRoot, directory);
         return new Promise(function promiseHandler(resolve, reject) {
-            fs.readdir(directory, function onDirRead(err, files) {
-                if (err) {
-                    reject(err);
+            fs.readdir(directory, function onDirRead(dirErr, files) {
+                if (dirErr) {
+                    reject(dirErr);
                 } else if (files.length) {
                     resolve();
                 } else {
                     const file = path.join(directory, '.keep');
-                    fs.writeFile(file, '', function onFileWritten(err) {
-                        if (err) {
-                            reject(err);
+                    fs.writeFile(file, '', function onFileWritten(fileErr) {
+                        if (fileErr) {
+                            reject(fileErr);
                         } else {
                             resolve();
                         }

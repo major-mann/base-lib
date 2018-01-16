@@ -86,12 +86,20 @@ function ask(txt, def, options) {
 
     function createOptionsText() {
         if (Array.isArray(options)) {
-            return options.map(o => o.toLowerCase() === def.toLowerCase() ? `[${o}]` : o).join(', ');
+            return options.map(createOptionText).join(', ');
         } else if (options instanceof RegExp) {
             const defText = def && ` [${def}]` || '';
             return `Must match ${options.source}${defText}`;
         } else {
             return '';
+        }
+
+        function createOptionText(option) {
+            if (option.toLowerCase() === def.toLowerCase()) {
+                return `[${option}]`;
+            } else {
+                return option;
+            }
         }
     }
 

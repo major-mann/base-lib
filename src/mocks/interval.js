@@ -46,8 +46,8 @@ module.exports = function createMock() {
             handler,
             delay,
             reference: waitingProxy,
-            flush,
-            clear
+            flush: flushInterval,
+            clear: clearWaiting
         };
 
         function createTrap(name) {
@@ -64,11 +64,11 @@ module.exports = function createMock() {
             handler();
         }
 
-        function clear() {
+        function clearWaiting() {
             clearTimeout(waiting);
         }
 
-        function flush(ms) {
+        function flushInterval(ms) {
             if (ms > 0 === false) {
                 return;
             }

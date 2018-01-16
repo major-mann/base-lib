@@ -10,8 +10,11 @@ module.exports = {
 const INIT_AUTHOR_EMAIL = 'init.author.email',
     INIT_AUTHOR_NAME = 'init.author.name';
 
-const npm = require('npm'),
-    sys = require('./sys.js');
+// Module dependencies
+const npm = require('npm');
+
+// Project dependencies
+const sys = require('./sys.js');
 
 function install(dir, packages) {
     packages = packages || [];
