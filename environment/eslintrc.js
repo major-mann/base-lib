@@ -1,5 +1,6 @@
 module.exports = {
     extends: [
-        // TODO: Put project rules reference here
+        'personal-eslint-rules',
+        // Note: Put project specific rules here
     ]
 };
