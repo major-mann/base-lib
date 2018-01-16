@@ -1,3 +1,3 @@
 module.exports = {
-    extends: ['personal-eslint-rules']
+    extends: ['@gmsllc-private/eslint-config']
 };

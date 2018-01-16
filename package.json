@@ -38,11 +38,11 @@
         "mockery": "latest",
         "npm": "latest",
         "parse-git-config": "latest",
-        "personal-eslint-rules": "git+ssh://git@github.com/major-mann/personal-eslint-rules.git",
         "sinon": "latest",
         "winston-spy": "latest"
     },
     "dependencies": {
+        "@gmsllc-private/eslint-config": "^1.0.1",
         "app-root-path": "latest",
         "moment": "latest"
     },
