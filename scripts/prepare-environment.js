@@ -92,6 +92,7 @@ function prepEnv() {
             .then(() => dynamic(appRoot, 'testing-helper', 'test/testing-helper.js', true))
             .then(() => dynamic(appRoot, 'readme', 'readme.md', true))
             // File copies (or links if LINK_ARG was supplied)
+            .then(() => fileLink(appRoot, 'environment/npmrc', '.npmrc', true))
             .then(() => fileLink(appRoot, 'environment/gitignore', '.gitignore', true))
             .then(() => fileLink(appRoot, 'environment/eslintignore', '.eslintignore', true))
             .then(() => fileLink(appRoot, 'environment/editorconfig', '.editorconfig', true))

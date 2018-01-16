@@ -1,5 +1,5 @@
 {
-    "name": "base-lib",
+    "name": "@gmsllc-private/base-lib",
     "version": "0.0.9",
     "description": "A base library that includes a build pipeline and QA tools (testing, linting etc)",
     "main": "src/index.js",
