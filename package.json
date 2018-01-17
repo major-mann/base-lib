@@ -15,10 +15,10 @@
         "bump": "./scripts/bump.js",
         "prepare-environment": "./scripts/prepare-environment.js"
     },
-    "author": "Calvin Mann <calvinmann+npm@gmail.com>",
+    "author": "Calvin Mann <developers@kodify.io>",
     "license": "GPL-3.0",
     "devDependencies": {
-        "@gmsllc-private/eslint-config": "^1.0.5",
+        "@gmsllc-private/eslint-config": "latest",
         "chai": "latest",
         "chai-as-promised": "latest",
         "chai-spies": "latest",

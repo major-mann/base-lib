@@ -17,7 +17,7 @@ module.exports = {
         ],
         'max-nested-callbacks': [
             2,
-            5
+            10
         ],
         'no-magic-numbers': 0,
         'global-require': 0,
