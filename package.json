@@ -24,6 +24,7 @@
         "chai-spies": "latest",
         "command-exists": "latest",
         "eslint": "latest",
+        "eslint-plugin-import": "latest",
         "grunt": "latest",
         "grunt-complexity": "latest",
         "grunt-eslint": "latest",

@@ -6,9 +6,12 @@
  */
 
 const depends = require('./prepare-dependencies.js');
-depends()
-    .then(prepEnv)
-    .catch(err => console.error(`Unable to prepare environment! ${err.stack}`));
+
+(function staticInitialization() {
+    depends()
+        .then(prepEnv)
+        .catch(err => console.error(`Unable to prepare environment! ${err.stack}`));
+}());
 
 function prepEnv() {
     // Constants
@@ -396,6 +399,7 @@ function prepEnv() {
         /** Processes the dynamic module */
         function doProcess() {
             console.trace(`Processing dynamic module "${name}"`);
+            // eslint-disable-next-line import/no-dynamic-require
             const dynMod = require(`../dynamic/${name}.js`);
             const content = dynMod({
                 root: appRoot

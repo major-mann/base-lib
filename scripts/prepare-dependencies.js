@@ -4,12 +4,13 @@
  *  modules installed by the process)
  */
 
+// Node modules
 const childProcess = require('child_process'),
     path = require('path');
 
-//
-const sys = require('./util/sys.js'),
-    sourcePackage = require('../package.json');
+// Local packages
+const sourcePackage = require('../package.json'),
+    sys = require('./util/sys.js');
 
 // Globals
 const spawn = childProcess.spawn;
