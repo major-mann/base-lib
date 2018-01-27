@@ -1,5 +1,5 @@
 {
-    "name": "base-lib",
+    "name": "@major-mann/base-lib",
     "private": true,
     "version": "1.0.0",
     "description": "A base library that includes a build pipeline and QA tools (testing, linting etc)",
