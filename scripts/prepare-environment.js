@@ -20,7 +20,7 @@ function prepEnv() {
         LINK_ARG = 'ln',
         HEADING_LENGTH = 20,
         VERSION_PART_COUNT = 3,
-        LICENSE = 'SEE LICENSE IN license',
+        LICENSE = 'MIT',
         VERSION = '0.0.1',
         NONE = 'none',
         ENTRY = 'src/index.js',
@@ -99,14 +99,12 @@ function prepEnv() {
             .then(() => dynamic(appRoot, 'testing-helper', 'test/testing-helper.js', true))
             .then(() => dynamic(appRoot, 'readme', 'readme.md', true))
             // File copies (or links if LINK_ARG was supplied)
-            .then(() => fileLink(appRoot, 'environment/npmrc', '.npmrc', true))
             .then(() => fileLink(appRoot, 'environment/gitignore', '.gitignore', true))
             .then(() => fileLink(appRoot, 'environment/eslintignore', '.eslintignore', true))
             .then(() => fileLink(appRoot, 'environment/editorconfig', '.editorconfig', true))
             .then(() => fileLink(appRoot, 'environment/istanbul.yml', '.istanbul.yml', true))
             .then(() => fileLink(appRoot, 'environment/mocha.opts', 'test/mocha.opts', true))
             // Copied files
-            .then(() => copy(appRoot, 'environment/license', 'license', false))
             .then(() => copy(appRoot, 'environment/eslintrc.js', '.eslintrc.js', true))
             .then(() => copy(appRoot, 'environment/test.editorconfig', 'test/.editorconfig', true))
             .then(() => copy(appRoot, 'environment/test.eslintrc.js', 'test/.eslintrc.js', true))
