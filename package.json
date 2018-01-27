@@ -1,6 +1,6 @@
 {
-    "name": "base-lib",
-    "version": "0.0.9",
+    "name": "@gmsllc-private/base-lib",
+    "version": "1.0.0",
     "description": "A base library that includes a build pipeline and QA tools (testing, linting etc)",
     "main": "src/index.js",
     "scripts": {
@@ -15,19 +15,21 @@
         "bump": "./scripts/bump.js",
         "prepare-environment": "./scripts/prepare-environment.js"
     },
-    "author": "Calvin Mann <calvinmann+npm@gmail.com>",
+    "author": "Calvin Mann <developers@kodify.io>",
     "license": "GPL-3.0",
     "devDependencies": {
+        "@gmsllc-private/eslint-config": "latest",
         "chai": "latest",
         "chai-as-promised": "latest",
         "chai-spies": "latest",
         "command-exists": "latest",
         "eslint": "latest",
+        "eslint-plugin-import": "latest",
         "grunt": "latest",
         "grunt-complexity": "latest",
         "grunt-eslint": "latest",
         "grunt-filenames": "latest",
-        "grunt-jscpd": "latest",
+        "grunt-jsinspect": "latest",
         "grunt-jsonlint": "latest",
         "grunt-mocha-test": "latest",
         "grunt-shell": "latest",
@@ -38,7 +40,6 @@
         "mockery": "latest",
         "npm": "latest",
         "parse-git-config": "latest",
-        "personal-eslint-rules": "git+ssh://git@github.com/major-mann/personal-eslint-rules.git",
         "sinon": "latest",
         "winston-spy": "latest"
     },

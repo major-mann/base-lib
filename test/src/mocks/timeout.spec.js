@@ -88,7 +88,9 @@ describe('timeout mock', function () {
         expect(() => timeoutMock.setTimeout.$verifyNoPendingTasks()).not.to.throw();
     });
     it('should execute the handler with setTimeout as normal if $flush is not called', function (done) {
-        var flag = false, t2, t3;
+        var flag = false,
+            t2,
+            t3;
         timeoutMock.setTimeout(function () {
             try {
                 expect(flag).to.equal(false);

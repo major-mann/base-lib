@@ -54,7 +54,6 @@ The following structure is prepared by the `prepare-environment` script.
 
 * `src` The directory containing the primary source code of the application
 * `test` The directory containing the tests for the library
-* `.eslintrc` An eslint configuration pointing to the common configuration stored in the base library
 * `gruntfile.js` A gruntfile referencing the common gruntfile defined in the base library
 * `.nvmrc` An NVM configuration with the appropriate version of node
 * `.gitignore` gitignore configuration

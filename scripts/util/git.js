@@ -18,19 +18,29 @@ module.exports = {
 // Constants
 const GIT = 'git';
 
-// Dependecies
-const parseGitConfig = require('parse-git-config'),
-    commandExists = require('command-exists'),
-    sys = require('./sys.js'),
-    path = require('path'),
+// Core Dependecies
+const path = require('path'),
     fs = require('fs');
+
+// Module dependecies
+const parseGitConfig = require('parse-git-config'),
+    commandExists = require('command-exists');
+
+// Project dependecies
+const sys = require('./sys.js');
 
 /**
  * Checks whether a git command is available on the current system.
  */
 function installed() {
     return new Promise(function promiseHandler(resolve, reject) {
-        commandExists(GIT, (err, exists) => err ? reject(err) : resolve(exists));
+        commandExists(GIT, function onCheckedCommand(err, exists) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(exists);
+            }
+        });
     });
 }
 
@@ -46,7 +56,7 @@ function initialized(dir) {
 /** Initializes the supplied directory as a git directory */
 function initialize(dir) {
     // Initilialize git of it has not already been initialized
-    return initialized(dir).then(initialized => initialized || doInitGit());
+    return initialized(dir).then(isInitialized => isInitialized || doInitGit());
 
     /** Init and perform initial commit */
     function doInitGit() {
@@ -58,8 +68,8 @@ function initialize(dir) {
 function uncommittedChanges(dir) {
     // Initilialize git of it has not already been initialized
     return installed()
-        .then(installed => installed && initialized(dir))
-        .then(initialized => initialized && doChangesCheck());
+        .then(isInstalled => isInstalled && initialized(dir))
+        .then(isInitialized => isInitialized && doChangesCheck());
 
     /** Init and perform initial commit */
     function doChangesCheck() {
@@ -92,7 +102,7 @@ function flowInitialized(dir) {
 
 /** Initializes git flow in the specified directory */
 function initializeFlow(dir, silent) {
-    return flowInitialized(dir).then(initialized => initialized || doInitGitFlow());
+    return flowInitialized(dir).then(isInitialized => isInitialized || doInitGitFlow());
 
     /** Initialize git flow */
     function doInitGitFlow() {

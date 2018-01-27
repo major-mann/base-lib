@@ -43,9 +43,7 @@ const MODULES = [
             }
         },
         eslint: {
-            options: {
-                ignorePath: '.eslintignore'
-            },
+            options: { ignorePath: '.eslintignore' },
             target: '.'
         },
         jscpd: {
@@ -85,23 +83,28 @@ module.exports = function grunt(modules, config, tasks) {
 
     /**
      * Initializes grunt with the built config.
-     * @param {object} grunt The supplied grunt instace.
+     * @param {object} gruntApp The supplied grunt instace.
      */
-    return function gruntInit(grunt) {
+    return function gruntInit(gruntApp) {
         var i, name;
-        grunt.initConfig(config);
+        gruntApp.initConfig(config);
         for (i = 0; i < modules.length; i++) {
-            grunt.loadNpmTasks(modules[i]);
+            gruntApp.loadNpmTasks(modules[i]);
         }
         for (i = 0; i < tasks.length; i++) {
             // Remove the name off the front of the task array
             name = tasks[i].shift();
-            grunt.registerTask(name, tasks[i]);
+            gruntApp.registerTask(name, tasks[i]);
         }
     };
 };
 
-/** Merges multiple object together */
+/**
+ * Merges multiple object together.
+ * @param {object} target The object to merge the data onto
+ * @param {object} src The src to get the data from
+ * @returns {object} The result of the merge.
+ */
 function merge(target, src) {
     if (!target && typeof target !== 'object') {
         return target;
@@ -117,7 +120,11 @@ function merge(target, src) {
         return target;
     }
 
-    /** Copies the key if it is a value type or function, otherwise merges (by key for objects and arrays) */
+    /**
+     * Copies the key if it is a value type or function, otherwise merges (by key for objects and arrays)
+     * @param {string} key The name of the property to process.
+     * @returns {object} The target.
+     */
     function processKey(key) {
         const tobj = target[key] && typeof target[key] === 'object';
         const sobj = src[key] && typeof src[key] === 'object';

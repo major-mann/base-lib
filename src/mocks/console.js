@@ -25,6 +25,7 @@ module.exports = function createMock() {
     function createLogFunction(name) {
         return global.chai.spy(function consoleIntercep() {
             if (output) {
+                // eslint-disable-next-line no-console
                 console[name](...arguments);
             }
         });

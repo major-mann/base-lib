@@ -1,6 +1,6 @@
-describe('Log wrap', function () {
+describe('Log wrap', function testLogWrap() {
     var logWrap, log;
-    beforeEach(function () {
+    beforeEach(function beforeTestLogWrap() {
         logWrap = require('../../src/log-wrap.js');
         log = {
             silly: chai.spy(),
@@ -12,27 +12,27 @@ describe('Log wrap', function () {
         };
     });
 
-    it('should be a function', function () {
+    it('should be a function', function testExistance() {
         expect(logWrap).to.be.a('function');
     });
-    it('should have a property named "LEVELS" which are the level names to create new loggers with', function () {
+    it('should have a property named "LEVELS" which are the level names to create new loggers with', function testLevelsStatic() {
         expect(logWrap.LEVELS).to.be.an('array');
     });
 
-    it('should ensure "log" is an object or function', function () {
+    it('should ensure "log" is an object or function', function testAssignable() {
         expect(() => logWrap(123)).to.throw(/log.*function.*object/i);
         expect(() => logWrap('hello world')).to.throw(/log.*function.*object/i);
         expect(() => logWrap(true)).to.throw(/log.*function.*object/i);
         expect(() => logWrap(null)).to.throw(/log.*function.*object/i);
         expect(() => logWrap()).to.throw(/log.*function.*object/i);
     });
-    it('should not re-wrap an existing log', function () {
+    it('should not re-wrap an existing log', function testNoReWrap() {
         const res1 = logWrap(log);
         const res2 = logWrap(res1);
         expect(res1).not.to.equal(log);
         expect(res1).to.equal(res2);
     });
-    it('should attempt to retrieve initial level from underlying log', function () {
+    it('should attempt to retrieve initial level from underlying log', function testInitialLevelRetrieve() {
         const level = 'warn';
         const res1 = logWrap(log);
         log.level = level;
@@ -41,34 +41,34 @@ describe('Log wrap', function () {
         expect(res1.level).to.equal(logWrap.DEFAULT_LEVEL);
         expect(res2.level).to.equal(level);
     });
-    it('should set the base log level when setting log level if the base originally had one', function () {
+    it('should set the base log level when setting log level if the base originally had one', function testBaseLogLevelSet() {
         log.level = 'info';
         const res1 = logWrap(log);
         res1.level = 'warn';
         expect(log.level).to.equal('warn');
     });
-    it('should reject an object without at least 1 of the log levels as a function', function () {
+    it('should reject an object without at least 1 of the log levels as a function', function testRejectAllNonFunctionLevels() {
         expect(() => logWrap({})).to.throw(/no.*valid.*levels/i);
     });
 
-    describe('options checks', function () {
-        it('should ensure options is an object or function when supplied', function () {
+    describe('options checks', function testOptions() {
+        it('should ensure options is an object or function when supplied', function testOptionsAssignable() {
             expect(() => logWrap(log, 123)).to.throw(/options.*object/i);
             expect(() => logWrap(log, 'foo bar baz')).to.throw(/options.*object/i);
             expect(() => logWrap(log, {})).not.to.throw();
             expect(() => logWrap(log, () => true)).not.to.throw();
         });
-        it('should ensure options.levelCheck is a function when supplied', function () {
+        it('should ensure options.levelCheck is a function when supplied', function testLevelCheck() {
             expect(() => logWrap(log, { levelCheck: 'foo' })).to.throw(/options\.levelCheck.*function/i);
             expect(() => logWrap(log, { levelCheck: () => true })).not.to.throw();
         });
-        it('should ensure stat is an object or function when supplied', function () {
+        it('should ensure stat is an object or function when supplied', function testStatCheck() {
             expect(() => logWrap(log, { stat: 'foo' })).to.throw(/stat.*function.*object/i);
             expect(() => logWrap(log, { stat: true })).to.throw(/stat.*function.*object/i);
             expect(() => logWrap(log, { stat: 123 })).to.throw(/stat.*function.*object/i);
             expect(() => logWrap(log, { stat: undefined })).not.to.throw();
         });
-        it('should ensure stat.increment is a function when supplied', function () {
+        it('should ensure stat.increment is a function when supplied', function testStatIncrement() {
             var stat;
             stat = { increment: 123 };
             expect(() => logWrap(log, { stat })).to.throw(/increment.*function/i);
@@ -77,7 +77,7 @@ describe('Log wrap', function () {
             stat = { increment: () => true };
             expect(() => logWrap(log, { stat })).not.to.throw();
         });
-        it('should ensure stat.decrement is a function when supplied', function () {
+        it('should ensure stat.decrement is a function when supplied', function testStatDecrement() {
             var stat;
             stat = { decrement: 123 };
             expect(() => logWrap(log, { stat })).to.throw(/decrement.*function/i);
@@ -86,7 +86,7 @@ describe('Log wrap', function () {
             stat = { decrement: () => true };
             expect(() => logWrap(log, { stat })).not.to.throw();
         });
-        it('should ensure stat.histogram is a function when supplied', function () {
+        it('should ensure stat.histogram is a function when supplied', function testStatHistorgramCheck() {
             var stat;
             stat = { histogram: 123 };
             expect(() => logWrap(log, { stat })).to.throw(/histogram.*function/i);
@@ -95,7 +95,7 @@ describe('Log wrap', function () {
             stat = { histogram: () => true };
             expect(() => logWrap(log, { stat })).not.to.throw();
         });
-        it('should ensure stat.gauge is a function when supplied', function () {
+        it('should ensure stat.gauge is a function when supplied', function testStatGaugeCheck() {
             var stat;
             stat = { gauge: 123 };
             expect(() => logWrap(log, { stat })).to.throw(/gauge.*function/i);
@@ -104,7 +104,7 @@ describe('Log wrap', function () {
             stat = { gauge: () => true };
             expect(() => logWrap(log, { stat })).not.to.throw();
         });
-        it('should ensure stat.timing is a function when supplied', function () {
+        it('should ensure stat.timing is a function when supplied', function testStatTimingCheck() {
             var stat;
             stat = { timing: 123 };
             expect(() => logWrap(log, { stat })).to.throw(/timing.*function/i);
@@ -113,7 +113,7 @@ describe('Log wrap', function () {
             stat = { timing: () => true };
             expect(() => logWrap(log, { stat })).not.to.throw();
         });
-        it('should ensure stat.set is a function when supplied', function () {
+        it('should ensure stat.set is a function when supplied', function testStatSetCheck() {
             var stat;
             stat = { set: 123 };
             expect(() => logWrap(log, { stat })).to.throw(/set.*function/i);
@@ -122,7 +122,7 @@ describe('Log wrap', function () {
             stat = { set: () => true };
             expect(() => logWrap(log, { stat })).not.to.throw();
         });
-        it('should ensure stat.unique is a function when supplied', function () {
+        it('should ensure stat.unique is a function when supplied', function testStatUniqueCheck() {
             var stat;
             stat = { unique: 123 };
             expect(() => logWrap(log, { stat })).to.throw(/unique.*function/i);
@@ -133,49 +133,48 @@ describe('Log wrap', function () {
         });
     });
 
-    describe('function log', function () {
-        var log;
-        beforeEach(function () {
+    describe('function log', function testLog() {
+        beforeEach(function beforeTestLog() {
             log = chai.spy();
             log.error = chai.spy();
         });
 
-        it('should return a function', function () {
+        it('should return a function', function testLogFunction() {
             expect(logWrap(log)).to.be.a('function');
         });
-        it('should return a new proxy function to the supplied function', function () {
+        it('should return a new proxy function to the supplied function', function testLogProxy() {
             const proxy = logWrap(log);
             expect(proxy).not.to.equal(log);
             proxy();
             expect(log).to.have.been.called.exactly(1);
         });
-        it('should have the original function as a prototype', function () {
+        it('should have the original function as a prototype', function testLogPrototype() {
             const proxy = logWrap(log);
             expect(Object.getPrototypeOf(proxy)).to.equal(log);
         });
     });
 
-    describe('object log', function () {
-        it('should return an object', function () {
+    describe('object log', function testLog() {
+        it('should return an object', function testLogObject() {
             const res = logWrap(log);
             expect(res).to.be.an('object');
         });
-        it('should return an object with a prototype of "log"', function () {
+        it('should return an object with a prototype of "log"', function testLogPrototype() {
             const res = logWrap(log);
             expect(Object.getPrototypeOf(res)).to.equal(log);
         });
     });
 
-    describe('meta properties', function () {
+    describe('meta properties', function testMetaProperties() {
         var options;
-        beforeEach(function () {
+        beforeEach(function beforeTestMetaProperties() {
             options = {
                 id: 'foo bar baz',
                 tags: ['foo', 'bar', 'baz']
             };
             log = logWrap(log, options);
         });
-        it('should have a property called "levels" which is an object with level names and their severity indexes', function () {
+        it('should have a property called "levels" which is an object with level names and their severity indexes', function testMetaPropertiesLevels() {
             expect(log.levels).to.be.an('object');
             expect(log.levels.error).to.equal(0);
             expect(log.levels.warn).to.equal(1);
@@ -184,17 +183,17 @@ describe('Log wrap', function () {
             expect(log.levels.debug).to.equal(4);
             expect(log.levels.silly).to.equal(5);
         });
-        it('should have a property named "level" which is a string representing the current level', function () {
+        it('should have a property named "level" which is a string representing the current level', function testMetaPropertiesDefaultLevel() {
             expect(log.level).to.equal(logWrap.DEFAULT_LEVEL);
         });
-        it('should only allow valid levels to be set', function () {
+        it('should only allow valid levels to be set', function testMetaPropertiesLevel() {
             expect(() => log.level = 123).to.throw(/invalid/i);
             expect(() => log.level = true).to.throw(/invalid/i);
             expect(() => log.level = 'foo bar baz').to.throw(/invalid/i);
             expect(() => log.level = '').to.throw(/invalid/i);
             expect(() => log.level = 'error').not.to.throw();
         });
-        it('should have an array called tags which contains the tags to use', function () {
+        it('should have an array called tags which contains the tags to use', function testMetaPropertiesTags() {
             expect(log.tags).to.be.an('array');
             expect(log.tags[0]).to.equal('foo');
             expect(log.tags[1]).to.equal('bar');
@@ -202,12 +201,12 @@ describe('Log wrap', function () {
         });
     });
 
-    describe('levels', function () {
+    describe('levels', function testLevels() {
         var baseLog, errArgs;
-        beforeEach(function () {
+        beforeEach(function beforeTestLevels() {
             const opts = {};
             baseLog = {
-                error: chai.spy(function () {
+                error: chai.spy(function errorSpy() {
                     errArgs = [...arguments];
                 }),
                 verbose: chai.spy()
@@ -215,25 +214,25 @@ describe('Log wrap', function () {
             log = logWrap(baseLog, opts);
             log.level = 'silly';
         });
-        it('should have a "silly" function', function () {
+        it('should have a "silly" function', function testLevelsSilly() {
             expect(log.silly).to.be.a('function');
         });
-        it('should have a "debug" function', function () {
+        it('should have a "debug" function', function testLevelsDebug() {
             expect(log.debug).to.be.a('function');
         });
-        it('should have a "verbose" function', function () {
+        it('should have a "verbose" function', function testLevelsVerbose() {
             expect(log.verbose).to.be.a('function');
         });
-        it('should have a "info" function', function () {
+        it('should have a "info" function', function testLevelsInfo() {
             expect(log.info).to.be.a('function');
         });
-        it('should have a "warn" function', function () {
+        it('should have a "warn" function', function testLevelsWarn() {
             expect(log.warn).to.be.a('function');
         });
-        it('should have a "error" function', function () {
+        it('should have a "error" function', function testLevelsError() {
             expect(log.error).to.be.a('function');
         });
-        it('should map to the nearest available function', function () {
+        it('should map to the nearest available function', function testLevelsMapping() {
             log.error('foo');
             expect(baseLog.error).to.have.been.called.exactly(1);
             log.warn('foo');
@@ -251,7 +250,7 @@ describe('Log wrap', function () {
             expect(baseLog.verbose).to.have.been.called.exactly(3);
             expect(baseLog.error).to.have.been.called.exactly(3);
         });
-        it('should allow a single function to be passed in that can be called to retrieve the arguments', function () {
+        it('should allow a single function to be passed in that can be called to retrieve the arguments', function testFunctionParam() {
             log.error(() => ['foo', 'bar', 'baz']);
             expect(errArgs).to.be.an('array');
             expect(errArgs.length).to.equal(3);
@@ -259,7 +258,7 @@ describe('Log wrap', function () {
             expect(errArgs[1]).to.equal('bar');
             expect(errArgs[2]).to.equal('baz');
         });
-        it('should allow a both an array or a single value to be returned', function () {
+        it('should allow a both an array or a single value to be returned', function testFunctionParm() {
             log.error(() => 'hello world');
             expect(errArgs).to.be.an('array');
             expect(errArgs.length).to.equal(1);
@@ -272,7 +271,7 @@ describe('Log wrap', function () {
             expect(baseLog.error).to.have.been.called.exactly(1);
             expect(baseLog.verbose).to.have.been.called.exactly(0);
         });
-        it('should prefix the given message with the tags', function () {
+        it('should prefix the given message with the tags', function testTagPrefix() {
             log.tags.push('foo');
             log.tags.push('bar');
             log.tags.push('baz');
@@ -282,16 +281,16 @@ describe('Log wrap', function () {
             expect(errArgs.length).to.equal(1);
             expect(errArgs[0]).to.match(/\[foo\]\[bar\]\[baz\]hello world/i);
         });
-        it('should add a timestamp to the prefix if the options.timestamp is truthy', function () {
-            const log = logWrap(baseLog, { timestamp: true });
+        it('should add a timestamp to the prefix if the options.timestamp is truthy', function testAddTimestamp() {
+            log = logWrap(baseLog, { timestamp: true });
             log.error('foo bar baz');
             const date = (new Date())
                 .toISOString()
                 .substr(0, 19);
             expect(errArgs[0]).to.match(new RegExp(`${date}.*foo bar baz`));
         });
-        it('should use the supplied value as a timestamp format if options.timestamp is a string', function () {
-            const log = logWrap(baseLog, { timestamp: 'YYYY-MM-DD' });
+        it('should use the supplied value as a timestamp format if options.timestamp is a string', function testTimestampValue() {
+            log = logWrap(baseLog, { timestamp: 'YYYY-MM-DD' });
             log.error('foo bar baz');
             const date1 = (new Date())
                 .toISOString()
@@ -300,15 +299,15 @@ describe('Log wrap', function () {
             expect(errArgs[0]).not.to.match(new RegExp(`${date1}.*foo bar baz`));
             expect(errArgs[0]).to.match(new RegExp(`${date2}.*foo bar baz`));
         });
-        it('should add the call location to the prefix if options.callLocation is truthy', function () {
-            const log = logWrap(baseLog, { callLocation: true });
+        it('should add the call location to the prefix if options.callLocation is truthy', function testCallLocation() {
+            log = logWrap(baseLog, { callLocation: true });
             log.error('foo bar baz');
-            expect(errArgs[0]).to.match(new RegExp(`\\[test/src/log-wrap\\.spec\\.js:\\d+.*\\].*foo bar baz`, 'i'));
+            expect(errArgs[0]).to.match(new RegExp('\\[test/src/log-wrap\\.spec\\.js:\\d+.*\\].*foo bar baz', 'i'));
         });
 
-        it('should put the first project (non module) location in brackets', function () {
+        it('should put the first project (non module) location in brackets', function testCallLocation() {
             const fakeStack = new Error().stack.split('\n');
-            global.Error = function (message) {
+            global.Error = function Error(message) {
                 const fs = fakeStack.slice();
                 fs.splice(1, 0, 'at fake.location (/some/place/node_modules/fake.js:36:78)');
                 return {
@@ -316,15 +315,15 @@ describe('Log wrap', function () {
                     stack: fs.join('\n')
                 };
             };
-            const log = logWrap(baseLog, { callLocation: true });
+            log = logWrap(baseLog, { callLocation: true });
             log.error('foo bar baz');
-            const check = new RegExp(`\\[/some/place/node_modules/fake.js:36:78.*\\(test/src/log-wrap.spec.js:\\d+.*\\).*\\].*` +
-                `foo bar baz`, 'i');
+            const check = new RegExp('\\[/some/place/node_modules/fake.js:36:78.*\\(test/src/log-wrap.spec.js:\\d+.*\\).*\\].*' +
+                'foo bar baz', 'i');
             expect(errArgs[0]).to.match(check);
         });
 
-        it('should allow a custom prefix to be trimmed from stack entries if options.callLocation is a string', function () {
-            const log = logWrap(baseLog, { callLocation: `/${__dirname.split('/')[1]}/` });
+        it('should allow a custom prefix to be trimmed from stack entries if options.callLocation is a string', function testCustomPrefix() {
+            log = logWrap(baseLog, { callLocation: `/${__dirname.split('/')[1]}/` });
             const expected = __filename
                 .split('/')
                 .slice(2)
@@ -332,7 +331,7 @@ describe('Log wrap', function () {
             log.error('foo bar baz');
             expect(errArgs[0]).to.match(new RegExp(`\\[${expected}:\\d+.*\\].*foo bar baz`, 'i'));
         });
-        it('should handle a non string first argument', function () {
+        it('should handle a non string first argument', function testNonString() {
             log.tags.push('foo');
             log.tags.push('bar');
             log.tags.push('baz');
@@ -342,7 +341,7 @@ describe('Log wrap', function () {
             expect(errArgs.length).to.equal(1);
             expect(errArgs[0]).to.match(/\[foo\]\[bar\]\[baz\]undefined/i);
         });
-        it('should call the check function if one was supplied', function () {
+        it('should call the check function if one was supplied', function testCheckFunctionCall() {
             var lc = chai.spy(() => false);
             log = logWrap(baseLog, { levelCheck: lc });
             log.level = 'error';
@@ -354,9 +353,9 @@ describe('Log wrap', function () {
         });
     });
 
-    describe('stat', function () {
+    describe('stat', function testStat() {
         var wrapped, statProvider;
-        beforeEach(function () {
+        beforeEach(function beforeTestStat() {
             statProvider = {
                 increment: chai.spy(),
                 decrement: chai.spy(),
@@ -369,57 +368,50 @@ describe('Log wrap', function () {
             wrapped = logWrap(log, { stat: statProvider });
         });
 
-        it('should be an object', function () {
+        it('should be an object', function testStatObject() {
             expect(wrapped.stat).to.be.an('object');
         });
-        it('should provide noop functions when no stat provider is defined', function () {
+        it('should provide noop functions when no stat provider is defined', function testStatNoop() {
             wrapped = logWrap(log, { });
             const cb = chai.spy();
             wrapped.stat.increment('foobar', 10, cb);
             wrapped.stat.increment('foobar', 10); // For coverage
             expect(cb).to.have.been.called.exactly(1);
         });
-        it('should have a function named "increment"', function () {
+        it('should have a function named "increment"', function testStatIncrement() {
             expect(wrapped.stat.increment).to.be.a('function');
             wrapped.stat.increment('foo bar baz');
-            // TODO: Add with ... chai-spies seems to be misbehaving when trying to use it?
-            expect(statProvider.increment).to.have.been.called.exactly(1); // .with('foo bar baz');
+            expect(statProvider.increment).to.have.been.called.exactly(1).with('foo bar baz');
         });
-        it('should have a function named "decrement"', function () {
+        it('should have a function named "decrement"', function testStatDecrement() {
             expect(wrapped.stat.decrement).to.be.a('function');
             wrapped.stat.decrement('foo bar baz');
-            // TODO: Add with ... chai-spies seems to be misbehaving when trying to use it?
-            expect(statProvider.decrement).to.have.been.called.exactly(1); // .with('foo bar baz');
+            expect(statProvider.decrement).to.have.been.called.exactly(1).with('foo bar baz');
         });
-        it('should have a function named "histogram"', function () {
+        it('should have a function named "histogram"', function testStatHistogram() {
             expect(wrapped.stat.histogram).to.be.a('function');
             wrapped.stat.histogram('foo bar baz');
-            // TODO: Add with ... chai-spies seems to be misbehaving when trying to use it?
-            expect(statProvider.histogram).to.have.been.called.exactly(1); // .with('foo bar baz');
+            expect(statProvider.histogram).to.have.been.called.exactly(1).with('foo bar baz');
         });
-        it('should have a function named "gauge"', function () {
+        it('should have a function named "gauge"', function testStatGauge() {
             expect(wrapped.stat.gauge).to.be.a('function');
             wrapped.stat.gauge('foo bar baz');
-            // TODO: Add with ... chai-spies seems to be misbehaving when trying to use it?
-            expect(statProvider.gauge).to.have.been.called.exactly(1); // .with('foo bar baz');
+            expect(statProvider.gauge).to.have.been.called.exactly(1).with('foo bar baz');
         });
-        it('should have a function named "unique"', function () {
+        it('should have a function named "unique"', function testStatUnique() {
             expect(wrapped.stat.unique).to.be.a('function');
             wrapped.stat.unique('foo bar baz');
-            // TODO: Add with ... chai-spies seems to be misbehaving when trying to use it?
-            expect(statProvider.unique).to.have.been.called.exactly(1); // .with('foo bar baz');
+            expect(statProvider.unique).to.have.been.called.exactly(1).with('foo bar baz');
         });
-        it('should have a function named "set"', function () {
+        it('should have a function named "set"', function testStatSet() {
             expect(wrapped.stat.set).to.be.a('function');
             wrapped.stat.set('foo bar baz');
-            // TODO: Add with ... chai-spies seems to be misbehaving when trying to use it?
-            expect(statProvider.set).to.have.been.called.exactly(1); // .with('foo bar baz');
+            expect(statProvider.set).to.have.been.called.exactly(1).with('foo bar baz');
         });
-        it('should have a function named "timing"', function () {
+        it('should have a function named "timing"', function testStatTiming() {
             expect(wrapped.stat.timing).to.be.a('function');
             wrapped.stat.timing('foo bar baz');
-            // TODO: Add with ... chai-spies seems to be misbehaving when trying to use it?
-            expect(statProvider.timing).to.have.been.called.exactly(1); // .with('foo bar baz');
+            expect(statProvider.timing).to.have.been.called.exactly(1).with('foo bar baz');
         });
     });
 });

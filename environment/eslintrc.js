@@ -1,6 +1,6 @@
 module.exports = {
     extends: [
-        'personal-eslint-rules',
+        '@gmsllc-private/eslint-config'
         // Note: Put project specific rules here
     ]
 };

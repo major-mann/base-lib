@@ -2,13 +2,15 @@
  * @module Testing helper. Used to provide common test initialization.
  */
 
-// Load middleware and modules to expose.
+// module dependencies
 const chai = require('chai'),
     sinon = require('sinon'),
     spies = require('chai-spies'),
     cap = require('chai-as-promised'),
-    mockery = require('mockery'),
-    mocks = require('./mocks');
+    mockery = require('mockery');
+
+// Project dependencies
+const mocks = require('./mocks');
 
 module.exports = function intializeChaiEnvironment() {
     const globals = {

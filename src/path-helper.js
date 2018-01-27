@@ -11,10 +11,14 @@ module.exports = {
 // Constants
 const NODE_MODULES = 'node_modules';
 
-// Dependecies
-const path = require('path'),
-    appRoot = require('app-root-path'),
-    npmPackage = require('../package.json');
+// Core Dependecies
+const path = require('path');
+
+// Module dependencies
+const appRoot = require('app-root-path');
+
+// Project dependencies
+const npmPackage = require('../package.json');
 
 /** Gets the value to use  */
 function consumerPath() {
