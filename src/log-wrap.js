@@ -4,9 +4,11 @@
  *  be used in cases where we receive a logger from a consumer of a library and wish to normalise the interface.
  */
 
-// Dependencies
-const appRoot = require('./path-helper.js'),
-    moment = require('moment');
+// Module dependencies
+const moment = require('moment');
+
+// Project Dependencies
+const appRoot = require('./path-helper.js');
 
 // Constants
 const NODE_MODULES = 'node_modules',
@@ -137,20 +139,20 @@ function wrap(log, options) {
     /**
      * Performs a wrap of an individual log level.
      */
-    function wrapLevel(res, funcs, level) {
-        Object.defineProperty(wrap, 'name', { value: funcs[level].name });
-        Object.defineProperty(wrap, 'length', { value: funcs[level].length });
-        return wrap;
+    function wrapLevel(result, handlers, level) {
+        Object.defineProperty(wrap, 'name', { value: handlers[level].name });
+        Object.defineProperty(wrap, 'length', { value: handlers[level].length });
+        return doWrap;
 
-        function wrap() {
+        function doWrap() {
             var args, prefix;
-            if (res.levels[res.level] < res.levels[level]) {
+            if (result.levels[result.level] < result.levels[level]) {
                 // Bail out since level is too low
                 return false;
             }
 
             // Allow the consumer a last chance to bail out.
-            if (!options.levelCheck(level, res)) {
+            if (!options.levelCheck(level, result)) {
                 return false;
             }
 
@@ -176,7 +178,7 @@ function wrap(log, options) {
             args[0] = prefix + args[0];
 
             // Do the log
-            funcs[level].apply(log, args);
+            handlers[level].apply(log, args);
             return true;
 
             function preparePrefix() {
@@ -215,17 +217,17 @@ function wrap(log, options) {
         return name;
     }
 
-    function createReturn(log) {
-        if (typeof log === 'function') {
-            const res = function res() {
-                return log(...arguments);
+    function createReturn(logger) {
+        if (typeof logger === 'function') {
+            const wrappedLogger = function wrappedLogger() {
+                return logger(...arguments);
             };
-            Object.defineProperty(res, 'name', { value: log.name });
-            Object.defineProperty(res, 'length', { value: log.length });
-            Object.setPrototypeOf(res, log);
-            return res;
+            Object.defineProperty(wrappedLogger, 'name', { value: logger.name });
+            Object.defineProperty(wrappedLogger, 'length', { value: logger.length });
+            Object.setPrototypeOf(wrappedLogger, logger);
+            return wrappedLogger;
         } else {
-            return Object.create(log);
+            return Object.create(logger);
         }
     }
 
@@ -281,14 +283,14 @@ function wrap(log, options) {
         }
 
         /** Returns the first entry that does not have "node_modules" in it's path */
-        function firstNonModule(stack) {
-            for (let i = 0; i < stack.length; i++) {
-                if (stack[i].indexOf(NODE_MODULES) === -1) {
+        function firstNonModule(stackTrace) {
+            for (let i = 0; i < stackTrace.length; i++) {
+                if (stackTrace[i].indexOf(NODE_MODULES) === -1) {
                     if (i === 0) {
                         // We want to return undefined since the project location is the location of the log.
                         break;
                     }
-                    return stack[i];
+                    return stackTrace[i];
                 }
             }
             return undefined;
@@ -302,55 +304,55 @@ function wrap(log, options) {
 
     function prepareFuncs() {
         var i, current;
-        const funcs = {};
-        LEVELS.forEach(level => funcs[level] = log[level]);
+        const functions = {};
+        LEVELS.forEach(level => functions[level] = log[level]);
 
         // First we need to ensure that error has a function
         for (i = 0; i < LEVELS.length; i++) {
-            if (typeof funcs[LEVELS[i]] === 'function') {
-                funcs[LEVELS[0]] = funcs[LEVELS[i]];
+            if (typeof functions[LEVELS[i]] === 'function') {
+                functions[LEVELS[0]] = functions[LEVELS[i]];
                 break;
             }
         }
         if (i === LEVELS.length) {
             throw new Error(`No valid levels found on the supplied log object! (${LEVELS.join()})`);
         }
-        current = funcs[LEVELS[0]];
+        current = functions[LEVELS[0]];
         for (i = 1; i < LEVELS.length; i++) {
-            if (typeof funcs[LEVELS[i]] === 'function') {
-                current = funcs[LEVELS[i]];
+            if (typeof functions[LEVELS[i]] === 'function') {
+                current = functions[LEVELS[i]];
             } else {
-                funcs[LEVELS[i]] = current;
+                functions[LEVELS[i]] = current;
             }
         }
-        return funcs;
+        return functions;
     }
 
     /** Ensures options are checked for validity and normalised to make consumption simpler */
-    function prepareOptions(options) {
-        if (options && typeof options !== 'object' && typeof options !== 'function') {
-            throw new Error(`When supplied options MUST be assignable (object or function) Got ${typeof options}`);
+    function prepareOptions(opts) {
+        if (opts && typeof opts !== 'object' && typeof opts !== 'function') {
+            throw new Error(`When supplied options MUST be assignable (object or function) Got ${typeof opts}`);
         }
-        options = options || {};
-        options = Object.assign({}, options);
+        opts = opts || {};
+        opts = Object.assign({}, opts);
 
-        if (options.levelCheck) {
-            if (typeof options.levelCheck !== 'function') {
-                throw new Error(`When supplied options.levelCheck MUST be a function`);
+        if (opts.levelCheck) {
+            if (typeof opts.levelCheck !== 'function') {
+                throw new Error('When supplied options.levelCheck MUST be a function');
             }
         }
-        options.levelCheck = options.levelCheck || (() => true);
+        opts.levelCheck = opts.levelCheck || (() => true);
         prepareStat();
-        return options;
+        return opts;
 
         function prepareStat() {
-            if (options.stat) {
-                if (typeof options.stat !== 'object' && typeof options.stat !== 'function') {
+            if (opts.stat) {
+                if (typeof opts.stat !== 'object' && typeof opts.stat !== 'function') {
                     throw new Error('when supplied options.stat MUST be assignable (function or object). ' +
-                        `Got ${options.stat && typeof options.stat}`);
+                        `Got ${opts.stat && typeof opts.stat}`);
                 }
             }
-            options.stat = Object.assign({}, options.stat);
+            opts.stat = Object.assign({}, opts.stat);
             ensureStatFunction('increment');
             ensureStatFunction('decrement');
             ensureStatFunction('histogram');
@@ -361,11 +363,11 @@ function wrap(log, options) {
         }
 
         function ensureStatFunction(name) {
-            if (options.stat[name] && typeof options.stat[name] !== 'function') {
+            if (opts.stat[name] && typeof opts.stat[name] !== 'function') {
                 throw new Error(`When supplied options.stat.${name} MUST be a function. ` +
-                    `Got ${options.stat[name] && typeof options.stat[name]}`);
+                    `Got ${opts.stat[name] && typeof opts.stat[name]}`);
             }
-            options.stat[name] = options.stat[name] || noop;
+            opts.stat[name] = opts.stat[name] || noop;
         }
     }
 

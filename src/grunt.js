@@ -10,13 +10,13 @@ const MODULES = [
         'grunt-eslint',
         'grunt-shell',
         'grunt-complexity',
-        'grunt-jscpd',
+        'grunt-jsinspect',
         'grunt-jsonlint',
         'grunt-filenames'
     ],
     TASKS = [
         ['cover', 'shell:cover'],
-        ['quality', 'filenames', 'eslint', 'jscpd', 'jsonlint'],
+        ['quality', 'filenames', 'eslint', 'jsinspect', 'jsonlint'],
         ['test', 'quality', 'mochaTest:spec'],
         ['default', 'test', 'cover']
     ],
@@ -63,15 +63,21 @@ const MODULES = [
             },
             target: '.'
         },
-        jscpd: {
-            src: {
-                path: 'src/',
-                exclude: []
+        jsinspect: {
+            options: {
+                identifiers: false,
+                literals: true,
+                minInstances: 2,
+                reporter: 'default',
+                threshold: 30,
+                truncate: 100,
+                // options used for grunt-jsinspect
+                configFile: '.jsinspectrc',
+                failOnMatch: true,
+                outputPath: undefined
             },
-            spec: {
-                path: 'spec/',
-                exclude: []
-            }
+            src: ['src/**/*.js'],
+            spec: ['spec/**/*.js']
         },
         jsonlint: {
             all: {
@@ -101,7 +107,7 @@ const MODULES = [
  *  then each of the sub tasks to be executed for that task.
  * @returns {function} The grunt initialization function
  */
-module.exports = function grunt(modules, config, tasks) {
+module.exports = function configureGrunt(modules, config, tasks) {
     config = merge({}, CONFIG, config);
     modules = MODULES.concat(modules);
     tasks = TASKS.concat(tasks);
@@ -110,16 +116,16 @@ module.exports = function grunt(modules, config, tasks) {
      * Initializes grunt with the built config.
      * @param {object} grunt The supplied grunt instace.
      */
-    return function gruntInit(grunt) {
+    return function gruntInit(gruntApp) {
         var i, name;
-        grunt.initConfig(config);
+        gruntApp.initConfig(config);
         for (i = 0; i < modules.length; i++) {
-            grunt.loadNpmTasks(modules[i]);
+            gruntApp.loadNpmTasks(modules[i]);
         }
         for (i = 0; i < tasks.length; i++) {
             // Remove the name off the front of the task array
             name = tasks[i].shift();
-            grunt.registerTask(name, tasks[i]);
+            gruntApp.registerTask(name, tasks[i]);
         }
     };
 };

@@ -1,6 +1,9 @@
 module.exports = {
     extends: [
-        '@major-mann/eslint-config-personal-rules'
+        '../.eslintrc.js'
         // Note: Put project specific rules here
-    ]
+    ],
+    rules: {
+        'no-magic-numbers': 0
+    }
 };

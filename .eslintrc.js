@@ -1,3 +1,8 @@
 module.exports = {
-    extends: ['personal-eslint-rules']
+    extends: ['@major-mann/eslint-config-personal-rules'],
+    parserOptions: {
+        ecmaFeatures: {
+            impliedStrict: true
+        }
+    }
 };
