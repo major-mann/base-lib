@@ -69,7 +69,7 @@ const MODULES = [
                 literals: true,
                 minInstances: 2,
                 reporter: 'default',
-                threshold: 30,
+                threshold: 50,
                 truncate: 100,
                 // options used for grunt-jsinspect
                 configFile: '.jsinspectrc',
